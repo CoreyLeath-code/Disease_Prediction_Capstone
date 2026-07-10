@@ -1,56 +1,150 @@
-# agents/supervisor.py
+"""Supervisor orchestration for the educational clinical-risk portfolio demo."""
+
+from __future__ import annotations
+
 import time
-from .state import DiagnosticState
+from typing import Final
+
 from .guards import DiagnosticCircuitBreaker, DiagnosticDeadlineException
+from .state import DiagnosticState
+
+_EDUCATIONAL_DISCLAIMER: Final[str] = (
+    "Educational demonstration only; this output is not a diagnosis or medical advice."
+)
+
 
 class DiagnosticSupervisorEngine:
-    """
-    The central Clinical Orchestration Core. Manages mathematical data ingestion workers,
-    coordinates biomarker analytics, and triggers LLM diagnostic compliance audits.
-    """
-    def __init__(self, use_llm_analyst: bool = True):
-        self.breaker = DiagnosticCircuitBreaker(hard_deadline_ms=5.0)
-        self.use_llm_analyst = use_llm_analyst
+    """Coordinate validation, transparent scoring, review, and latency telemetry.
 
-    def process_patient_record(self, patient_id: str, biomarkers: dict, s_bp: float, d_bp: float) -> DiagnosticState:
-        state = DiagnosticState(patient_id=patient_id, biomarker_features=biomarkers, systolic_bp=s_bp, diastolic_bp=d_bp)
-        state = state.append_trace("Ingested raw patient biomarker telemetry frame.")
-        
-        start_time = time.time()
+    The original capstone used diagnostic terminology. This hardened implementation
+    preserves the public class interface while clearly operating as a deterministic,
+    non-clinical educational screening workflow.
+    """
+
+    def __init__(
+        self,
+        use_llm_analyst: bool = True,
+        hard_deadline_ms: float = 50.0,
+    ) -> None:
+        self.breaker = DiagnosticCircuitBreaker(hard_deadline_ms=hard_deadline_ms)
+        # Retained as a compatibility flag. No external LLM call is made.
+        self.use_llm_analyst = bool(use_llm_analyst)
+
+    def process_patient_record(
+        self,
+        patient_id: str,
+        biomarkers: dict[str, float],
+        s_bp: float,
+        d_bp: float,
+    ) -> DiagnosticState:
+        """Process one synthetic/non-identifiable profile into an explainable state."""
+
+        self.breaker.reset()
+        state = DiagnosticState(
+            patient_id=patient_id,
+            biomarker_features=biomarkers,
+            systolic_bp=s_bp,
+            diastolic_bp=d_bp,
+        ).append_trace("Validated non-identifiable screening inputs.")
+
+        started = time.perf_counter()
         try:
-            # 1. Evaluate Quantitative Vital Threshold Boundaries (Worker 1)
-            if state.systolic_bp > 140.0 or state.diastolic_bp > 90.0:  # Stage 2 Hypertension Indicators
-                state = state.model_copy(update={"compliance_risk_score": 8.5}).append_trace("Worker 1: Critical physiological anomaly identified.")
-            
-            # 2. Invoke Generative LLM Compliance Layer (Agent 2)
-            if self.use_llm_analyst and state.compliance_risk_score > 7.0:
-                state = self._invoke_llm_clinical_analyst(state)
+            score, reasons = self._calculate_indicator_score(state)
+            category = self._classification_for(score)
+            state = state.model_copy(
+                update={
+                    "compliance_risk_score": score,
+                    "risk_probability": round(score / 10.0, 3),
+                    "diagnostic_classification": category,
+                }
+            )
+            for reason in reasons:
+                state = state.append_trace(reason)
 
-            # Check timing compliance constraints
-            elapsed_ms = (time.time() - start_time) * 1000
+            if self.use_llm_analyst and score >= 6.0:
+                state = self._run_educational_safety_review(state)
+
+            elapsed_ms = (time.perf_counter() - started) * 1_000.0
             self.breaker.evaluate_execution_timing(elapsed_ms)
-            
-            # Populate baseline model mock inference output if healthy
-            if not state.diagnostic_classification:
-                state = state.model_copy(update={"diagnostic_classification": "NORMAL_EVALUATION", "risk_probability": 0.12})
-            
             return state.model_copy(update={"processing_latency_ms": elapsed_ms})
 
-        except DiagnosticDeadlineException as dde:
-            # Emergency Circuit Breaker Fallback Path
-            elapsed_ms = (time.time() - start_time) * 1000
-            return state.model_copy(update={
-                "override_active": True,
-                "diagnostic_classification": "LATENCY_OVERRIDE_TRIGGERED",
-                "llm_clinical_suggestions": "CRITICAL SLA OVERRIDE: ROUTE PATIENT TO SECONDARY METRIC CACHE INSTANTLY.",
-                "processing_latency_ms": elapsed_ms
-            }).append_trace(f"DIAGNOSTIC CIRCUIT BREAKER OPENED: {str(dde)}")
+        except DiagnosticDeadlineException as exc:
+            elapsed_ms = (time.perf_counter() - started) * 1_000.0
+            return state.model_copy(
+                update={
+                    "override_active": True,
+                    "diagnostic_classification": "LATENCY_GUARD_FALLBACK",
+                    "llm_clinical_suggestions": (
+                        "The demonstration latency budget was exceeded. "
+                        "No screening interpretation should be relied upon."
+                    ),
+                    "processing_latency_ms": elapsed_ms,
+                }
+            ).append_trace(f"Latency guard opened: {exc}")
 
-    def _invoke_llm_clinical_analyst(self, state: DiagnosticState) -> DiagnosticState:
-        """Simulates structured Claude 3.5 Sonnet context-aware clinical data analysis."""
-        mock_analysis = "High-risk hypertensive tracking pattern detected. Cross-reference with standard clinical pathways immediately."
-        return state.model_copy(update={
-            "llm_compliance_analysis": "COMPLIANCE_REVIEW_REQUIRED",
-            "llm_clinical_suggestions": mock_analysis,
-            "diagnostic_classification": "EVALUATE_HIGH_RISK_HYPERTENSION"
-        }).append_trace("LLM Analyst Agent: Structural clinical safety insights computed and returned.")
+    @staticmethod
+    def _calculate_indicator_score(state: DiagnosticState) -> tuple[float, tuple[str, ...]]:
+        score = 0.0
+        reasons: list[str] = []
+        biomarkers = state.biomarker_features
+
+        glucose = biomarkers.get("fasting_blood_glucose")
+        if glucose is not None:
+            if glucose >= 126.0:
+                score += 2.5
+                reasons.append("Glucose exceeded the highest configured demo threshold.")
+            elif glucose >= 100.0:
+                score += 1.2
+                reasons.append("Glucose exceeded the configured demo reference band.")
+
+        hba1c = biomarkers.get("hba1c")
+        if hba1c is not None:
+            if hba1c >= 6.5:
+                score += 2.5
+                reasons.append("HbA1c exceeded the highest configured demo threshold.")
+            elif hba1c >= 5.7:
+                score += 1.2
+                reasons.append("HbA1c exceeded the configured demo reference band.")
+
+        if state.systolic_bp >= 140.0 or state.diastolic_bp >= 90.0:
+            score += 2.0
+            reasons.append("Blood pressure exceeded the highest configured demo threshold.")
+        elif state.systolic_bp >= 130.0 or state.diastolic_bp >= 80.0:
+            score += 1.0
+            reasons.append("Blood pressure exceeded the configured demo reference band.")
+
+        cholesterol = biomarkers.get("cholesterol")
+        if cholesterol is not None:
+            if cholesterol >= 240.0:
+                score += 1.5
+                reasons.append("Cholesterol exceeded the highest configured demo threshold.")
+            elif cholesterol >= 200.0:
+                score += 0.7
+                reasons.append("Cholesterol exceeded the configured demo reference band.")
+
+        if not reasons:
+            reasons.append("No configured educational threshold was exceeded.")
+
+        return min(round(score, 2), 10.0), tuple(reasons)
+
+    @staticmethod
+    def _classification_for(score: float) -> str:
+        if score >= 6.0:
+            return "ELEVATED_EDUCATIONAL_RISK_INDICATOR"
+        if score >= 2.5:
+            return "MODERATE_EDUCATIONAL_RISK_INDICATOR"
+        return "LOW_EDUCATIONAL_RISK_INDICATOR"
+
+    @staticmethod
+    def _run_educational_safety_review(state: DiagnosticState) -> DiagnosticState:
+        """Add a deterministic safety notice without making an external AI claim."""
+
+        return state.model_copy(
+            update={
+                "llm_compliance_analysis": "EDUCATIONAL_REVIEW_REQUIRED",
+                "llm_clinical_suggestions": (
+                    "One or more demo thresholds were exceeded. "
+                    f"{_EDUCATIONAL_DISCLAIMER}"
+                ),
+            }
+        ).append_trace("Deterministic safety reviewer added the required disclaimer.")

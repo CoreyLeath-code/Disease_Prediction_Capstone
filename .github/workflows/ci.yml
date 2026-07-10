@@ -1,0 +1,213 @@
+name: Disease Capstone Enterprise CI
+
+on:
+  push:
+    branches: [main, development]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: disease-capstone-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality-and-test:
+    name: Python ${{ matrix.python-version }} Quality & Tests
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: requirements-dev.txt
+
+      - name: Install deterministic CI dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+
+      - name: Validate Python syntax
+        run: |
+          python -m compileall -q api agents src tests streamlit_app.py streamlit_demo/app.py
+
+      - name: Run Ruff correctness checks
+        run: |
+          ruff check \
+            api/main.py \
+            app/main.py \
+            agents/guards.py \
+            agents/state.py \
+            agents/supervisor.py \
+            src/__init__.py \
+            src/risk_engine.py \
+            tests/test_api.py \
+            tests/test_risk_engine.py \
+            tests/test_supervisor.py \
+            streamlit_app.py \
+            streamlit_demo/app.py \
+            demo_app.py \
+            --select E9,F63,F7,F82
+
+      - name: Run domain API and supervisor tests with coverage
+        env:
+          PYTHONPATH: .
+        run: |
+          pytest tests/test_api.py tests/test_risk_engine.py tests/test_supervisor.py -v \
+            --cov=api \
+            --cov=src.risk_engine \
+            --cov=agents \
+            --cov-report=term-missing \
+            --cov-report=xml \
+            --junitxml=pytest-results.xml
+
+      - name: Upload test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-${{ matrix.python-version }}-evidence
+          path: |
+            coverage.xml
+            pytest-results.xml
+          if-no-files-found: warn
+
+  streamlit-demo:
+    name: Streamlit Deployment Smoke Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: streamlit_demo/requirements.txt
+
+      - name: Install Streamlit deployment dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r streamlit_demo/requirements.txt
+
+      - name: Validate dashboard import and domain contract
+        env:
+          PYTHONPATH: .
+        run: |
+          python - <<'PY'
+          import streamlit_app
+          from src.risk_engine import assess_profile, example_profiles
+
+          assessment = assess_profile(example_profiles()["Moderate indicator example"])
+          assert assessment.category == "moderate"
+          assert callable(streamlit_app.main)
+          print("Streamlit import and domain contract passed.")
+          PY
+
+      - name: Start and verify Streamlit health endpoint
+        env:
+          PYTHONPATH: .
+        run: |
+          streamlit run streamlit_demo/app.py \
+            --server.headless true \
+            --server.address 127.0.0.1 \
+            --server.port 8501 \
+            --server.fileWatcherType none \
+            --browser.gatherUsageStats false \
+            > streamlit.log 2>&1 &
+          echo $! > streamlit.pid
+          trap 'cat streamlit.log || true; kill $(cat streamlit.pid) >/dev/null 2>&1 || true' EXIT
+
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:8501/_stcore/health; then
+              echo "Streamlit deployment smoke test passed."
+              exit 0
+            fi
+            if ! kill -0 "$(cat streamlit.pid)" 2>/dev/null; then
+              echo "Streamlit exited before becoming healthy."
+              exit 1
+            fi
+            sleep 2
+          done
+
+          echo "Streamlit did not become healthy in time."
+          exit 1
+
+  container:
+    name: Container Build & Health Smoke Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build API image
+        run: docker build --pull -t disease-capstone:${{ github.sha }} .
+
+      - name: Start and verify API health
+        run: |
+          docker run -d --rm --name disease-capstone-ci \
+            -p 8000:8000 disease-capstone:${{ github.sha }}
+          trap 'docker logs disease-capstone-ci || true; docker stop disease-capstone-ci >/dev/null 2>&1 || true' EXIT
+
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:8000/health; then
+              echo "Disease Capstone API container is healthy."
+              exit 0
+            fi
+            sleep 2
+          done
+
+          echo "API container did not become healthy in time."
+          exit 1
+
+  release-readiness:
+    name: Release Readiness Contract
+    if: always()
+    needs: [quality-and-test, streamlit-demo, container]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify prerequisite jobs
+        env:
+          QUALITY_RESULT: ${{ needs.quality-and-test.result }}
+          STREAMLIT_RESULT: ${{ needs.streamlit-demo.result }}
+          CONTAINER_RESULT: ${{ needs.container.result }}
+        run: |
+          echo "Quality result: ${QUALITY_RESULT}"
+          echo "Streamlit result: ${STREAMLIT_RESULT}"
+          echo "Container result: ${CONTAINER_RESULT}"
+          test "${QUALITY_RESULT}" = "success"
+          test "${STREAMLIT_RESULT}" = "success"
+          test "${CONTAINER_RESULT}" = "success"
+
+      - name: Verify governance and deployment metadata
+        run: |
+          test -f README.md
+          test -f LICENSE
+          test -f SECURITY.md
+          test -f CONTRIBUTING.md
+          test -f CHANGELOG.md
+          test -f Dockerfile
+          test -f requirements-api.txt
+          test -f requirements-dev.txt
+          test -f streamlit_app.py
+          test -f streamlit_demo/app.py
+          test -f streamlit_demo/requirements.txt
+          test -f .streamlit/config.toml
+          test -f .github/CODEOWNERS
+          test -f .github/dependabot.yml
+          test -f .github/pull_request_template.md
+          test -f docs/L6_DEPLOYMENT_HYGIENE.md
+          test -f docs/STREAMLIT_DEPLOYMENT.md
+          echo "Disease Capstone release-readiness contract passed."

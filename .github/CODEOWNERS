@@ -1,0 +1,16 @@
+# Default ownership
+* @CoreyLeath-code
+
+# Application and domain contracts
+/api/ @CoreyLeath-code
+/agents/ @CoreyLeath-code
+/src/ @CoreyLeath-code
+/streamlit_app.py @CoreyLeath-code
+/streamlit_demo/ @CoreyLeath-code
+
+# Deployment, security, and governance
+/.github/ @CoreyLeath-code
+/Dockerfile @CoreyLeath-code
+/.streamlit/ @CoreyLeath-code
+/docs/ @CoreyLeath-code
+/SECURITY.md @CoreyLeath-code

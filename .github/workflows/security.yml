@@ -1,0 +1,136 @@
+name: Disease Capstone Security & Supply Chain
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: "23 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+
+concurrency:
+  group: disease-capstone-security-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  codeql:
+    name: CodeQL
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: github/codeql-action/init@v4
+        with:
+          languages: python
+      - uses: github/codeql-action/analyze@v4
+
+  secret-scan:
+    name: Secret Scanning
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Scan current source tree
+        run: |
+          docker run --rm \
+            -v "$PWD:/repo" \
+            -w /repo \
+            ghcr.io/gitleaks/gitleaks:latest \
+            detect --source . --no-git --redact --no-banner --exit-code 1
+
+  bandit:
+    name: Bandit Security Report
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install bandit==1.8.2
+      - name: Generate Bandit report
+        run: |
+          bandit -r api agents src -f json -o bandit-report.json || true
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bandit-security-report
+          path: bandit-report.json
+          if-no-files-found: warn
+
+  trivy-filesystem:
+    name: Trivy Filesystem Report
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: fs
+          scan-ref: .
+          format: table
+          output: trivy-filesystem.txt
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: "0"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: trivy-filesystem-report
+          path: trivy-filesystem.txt
+
+  trivy-container:
+    name: Trivy Container Report
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build deployment image
+        run: docker build --pull -t disease-capstone-security:${{ github.sha }} .
+      - uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: disease-capstone-security:${{ github.sha }}
+          format: table
+          output: trivy-container.txt
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: "0"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: trivy-container-report
+          path: trivy-container.txt
+
+  dependency-audit:
+    name: Dependency Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install pip-audit==2.7.3
+      - name: Generate API dependency report
+        run: pip-audit -r requirements-api.txt --format json --output pip-audit-api.json || true
+      - name: Generate Streamlit dependency report
+        run: pip-audit -r streamlit_demo/requirements.txt --format json --output pip-audit-streamlit.json || true
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dependency-audit-reports
+          path: |
+            pip-audit-api.json
+            pip-audit-streamlit.json
+          if-no-files-found: warn
+
+  sbom:
+    name: CycloneDX SBOM
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: anchore/sbom-action@v0
+        with:
+          path: .
+          format: cyclonedx-json
+          output-file: disease-capstone-sbom.cdx.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: disease-capstone-sbom
+          path: disease-capstone-sbom.cdx.json

@@ -1,345 +1,212 @@
-🏗️ ARCHITECTURE.md — Diabetes Prediction System
-
-Author: Corey Leath
-Repository: Diabetes_Prediction_ML_Pipeline
-Includes: ML Pipeline • LLM Reasoning • MCP Tools • RAG Retrieval • FastAPI • CI/CD • Docker
-
-📌 1. High-Level System Overview
-
-The Diabetes Prediction System is a modular, production-style ML platform that performs:
-
-Data ingestion + validation
-
-Feature engineering & preprocessing
-
-Model training + evaluation
-
-Model serving through FastAPI
-
-LLM-based explanation layer (OpenAI/HuggingFace)
-
-RAG retrieval for interpretability
-
-Dockerized deployment
-
-GitHub Actions CI/CD pipeline
-
-This architecture mirrors Stripe, Microsoft, Netflix, and OpenAI production design patterns.
-
-🛠️ 2. Component Breakdown
-2.1 Data Layer
-
-data/processed/ cleansed training data
-
-Validation rules ensure:
-
-No missing values
-
-No invalid ranges
-
-No leakage features
-
-Reproducible transformations
-
-Tools: Pandas, NumPy, Pydantic validation
-
-2.2 Feature Engineering Layer
-
-Includes:
-
-Scaling (StandardScaler)
-
-Normalization
-
-Interaction features
-
-Outlier trimming
-
-Train-test splitting
-
-Output stored in:
-
-artifacts/preprocessed/
-
-2.3 Model Training Layer
-
-Supports multiple ML algorithms:
-
-Random Forest
-
-XGBoost
-
-LightGBM
-
-Logistic Regression
-
-Trained models saved to:
-
-artifacts/models/
-
-
-Evaluation metrics saved to:
-
-metrics/
-
-2.4 Prediction Service (FastAPI)
-
-A fully documented REST API:
-
-/predict → ML model inference
-
-/explain_llm → LLM explanation of prediction
-
-/retrieve_context → RAG retrieval
-
-Uses:
-
-Pydantic schemas
-
-JSON validation
-
-Error handling
-
-Logging middleware
-
-2.5 LLM Reasoning Layer
-
-LLM Models Used:
-
-GPT-4.1
-
-GPT-o-mini
-
-Llama 3 (optional)
-
-Features:
-
-Natural language explanation of predictions
-
-Safety filtering
-
-Non-medical advisory constraints
-
-Optional chain-of-thought suppression for compliance
-
-2.6 RAG (Retrieval-Augmented Generation) Layer
-
-Vector store:
-
-artifacts/vector_store/
-
-
-Uses FAISS or ChromaDB.
-
-Retrieves:
-
-Medical research summary embeddings
-
-Feature definitions
-
-Model interpretation info
-
-Enhances:
-
-Explainability
-
-User trust
-
-Auditing
-
-2.7 MCP Integration
-
-MCP Tools included:
-
-file-system → Read/write logs & metrics
-
-vector-search → Power RAG
-
-model-server → Serve LLM explanations
-
-database-mcp (optional)
-
-Allows:
-
-Autonomous indexing
-
-Background refresh tasks
-
-File monitoring
-
-Enhanced debugging
-
-2.8 Docker Layer
-
-Containerization enables production portability.
-
-Docker features:
-
-Non-root user
-
-Multi-stage build
-
-Slim Python base image
-
-Exposed FastAPI port 8000
-
-Requirements pinned for reproducibility
-
-2.9 CI/CD Pipeline
-
-Implemented via GitHub Actions:
-
-Pipeline steps:
-
-Code checkout
-
-Install dependencies
-
-Run unit tests
-
-Build Docker image
-
-Push to registry
-
-Deploy (optional future step)
-
-Shields the repo with:
-
-Secret scanning
-
-Dependency vulnerability checks
-
-Auto-fail tests
-
-🔄 3. End-to-End System Workflow
-Step-by-Step Workflow Diagram (Text-Based)
-User Request
-    |
-    v
-FastAPI Endpoint (/predict)
-    |
-    v
-Input Validation (Pydantic)
-    |
-    v
-ML Model Loads → artifacts/models/best_model.pkl
-    |
-    v
-Prediction Output (0 or 1)
-    |
-    v
-LLM Reasoning (Optional)
-    |
-    v
-RAG Retrieval (Optional)
-    |
-    v
-Formatted JSON Response
-
-🧠 4. LLM + RAG Explainability Flow
-Prediction → Explanation Request
-          |
-          v
-     RAG Retriever
-          |
-          v
-Retrieve Research Context
-          |
-          v
-LLM Generates Explanation
-          |
-          v
-Safety Filter → Return Explanation
-
-
-This creates an explanation layer similar to OpenAI Evals, Anthropic Interpretability, and Microsoft Health Insights.
-
-🗂️ 5. Directory Structure (Production Standard)
-Diabetes_Prediction_ML_Pipeline/
-│
-├── config/
-│   ├── config.yaml
-│   └── schema.yaml
-│
-├── data/
-│   ├── raw/
-│   └── processed/
-│
-├── src/
-│   ├── data_ingestion/
-│   ├── data_preprocessing/
-│   ├── model_training/
-│   ├── model_evaluation/
-│   ├── prediction_service/
-│   ├── llm_explanations/
-│   └── rag/
-│
-├── artifacts/
-│   ├── models/
-│   ├── preprocessed/
-│   └── vector_store/
-│
-├── metrics/
-│
-├── tests/
-│
-├── docker/
-│
-├── .github/workflows/
-│
-├── requirements.txt
-├── metrics.md
-├── SECURITY.md
-├── ARCHITECTURE.md   ← THIS FILE
-└── README.md         ← FINAL FILE (COMING LAST)
-
-🧱 6. System Design Patterns Used
-
-Your repo now uses real Big Tech engineering patterns:
-
-✔ Clean Architecture
-✔ Domain-Driven Design (DDD)
-✔ Dependency Injection (light-weight)
-✔ Event-Driven ML Pipeline
-✔ Modular Services
-✔ Infrastructure-as-Code layout
-✔ CI/CD as Code
-✔ Secure API Gateway style
-
-This makes your repo match internship expectations at:
-
-Netflix, Amazon, Stripe, OpenAI, Google, NVIDIA, Meta.
-
-🚀 7. Scalability Considerations
-
-Future-ready improvements:
-
-API load balancing
-
-gRPC support
-
-Model registry (MLflow)
-
-Distributed training
-
-Cloud storage integration
-
-Monitoring dashboards (Grafana/Prometheus)
-
-🎯 8. Summary
-
-This architecture transforms your Diabetes Prediction project into a production-grade, L5/L6-level ML engineering system.
-
-Your repo now demonstrates:
-
-Real software engineering
-
-Real ML Ops design
-
-Real interpretability systems
-
-Real AI safety discipline
-
-Real distributed architecture thinking
-
-This is internship-ready, Big Tech-ready, and grad school portfolio-ready.
+# Architecture — Disease Prediction Capstone
+
+## Scope and Safety Boundary
+
+Disease Prediction Capstone is an educational software-engineering portfolio project. The current deployable path is a transparent, deterministic risk-screening demonstration. It is not a medical device, does not diagnose disease, and is not validated for patient-care decisions.
+
+## System Context
+
+```mermaid
+flowchart LR
+    User --> Streamlit[Streamlit Dashboard]
+    Client --> API[FastAPI Service]
+
+    Streamlit --> Validation[Domain Validation]
+    API --> Schema[Pydantic Validation]
+    Schema --> Validation
+
+    Validation --> Engine[Deterministic Educational Risk Engine]
+    Engine --> Explain[Explainability Evidence]
+    Explain --> Output[Score + Indicator Band + Disclaimer]
+
+    API --> Metrics[Prometheus Metrics]
+```
+
+The Streamlit dashboard and FastAPI service share the same domain implementation in `src/risk_engine.py`. This avoids duplicated scoring rules and keeps the public interface behavior consistent.
+
+## Component Responsibilities
+
+| Component | Responsibility |
+|---|---|
+| `src/risk_engine.py` | Bounded input contract, deterministic scoring, examples, explanation evidence |
+| `api/main.py` | HTTP contracts, Pydantic validation, metrics, API documentation |
+| `streamlit_app.py` | Interactive public dashboard, responsible-use guidance, downloads, Q&A |
+| `streamlit_demo/app.py` | Lightweight Streamlit Community Cloud entry point |
+| `agents/state.py` | Immutable compatibility state for the supervisor workflow |
+| `agents/guards.py` | Configurable demonstration latency guard |
+| `agents/supervisor.py` | Deterministic orchestration and safety-review compatibility layer |
+| `Dockerfile` | Minimal, multi-stage, non-root API runtime |
+| `.github/workflows/ci.yml` | Quality, tests, Streamlit health, container health, release readiness |
+| `.github/workflows/security.yml` | Static analysis, secret scanning, vulnerability reports, audits, SBOM |
+| `.github/workflows/release.yml` | GitHub Release artifacts and GHCR publishing |
+
+## Domain Model
+
+```mermaid
+classDiagram
+    class PatientProfile {
+      +int age
+      +float bmi
+      +float systolic_bp
+      +float diastolic_bp
+      +float glucose
+      +float insulin
+      +float skin_thickness
+      +float cholesterol
+      +float hba1c
+    }
+
+    class RiskAssessment {
+      +float score
+      +str category
+      +tuple contributors
+      +tuple educational_notes
+      +str backend
+      +str disclaimer
+      +to_dict()
+    }
+
+    PatientProfile --> RiskAssessment : assess_profile()
+```
+
+### Validation Rules
+
+The domain layer validates:
+
+- finite numeric values;
+- documented feature ranges;
+- systolic pressure greater than diastolic pressure;
+- reproducible examples;
+- deterministic output for identical input.
+
+The API adds:
+
+- JSON schema validation;
+- unknown-field rejection;
+- explicit request and response models;
+- OpenAPI documentation.
+
+## Scoring Design
+
+The public baseline uses visible threshold bands for glucose, HbA1c, blood pressure, BMI, cholesterol, and age. Insulin and skin-thickness values remain in the validated feature contract but are not assigned standalone weights without a trained and calibrated model.
+
+The score is:
+
+- deterministic;
+- bounded from 0 to 100;
+- explainable through contributor strings;
+- categorized as `low`, `moderate`, or `elevated` for demonstration purposes;
+- explicitly not a probability or diagnosis.
+
+## API Architecture
+
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant F as FastAPI
+    participant P as Pydantic
+    participant D as Domain Engine
+    participant M as Prometheus
+
+    C->>F: POST /predict
+    F->>P: Validate request
+    P-->>F: ScreeningRequest
+    F->>D: assess_profile()
+    D-->>F: RiskAssessment
+    F->>M: Record latency/category
+    F-->>C: ScreeningResponse
+```
+
+Endpoints:
+
+| Method | Path | Responsibility |
+|---|---|---|
+| GET | `/` | Identity and responsible-use metadata |
+| GET | `/health` | Dependency-free liveness |
+| GET | `/metrics` | Prometheus exposition |
+| GET | `/examples` | Fictional profiles and results |
+| POST | `/predict` | Validated educational screening |
+
+## Streamlit Architecture
+
+The public dashboard is artifact-independent. It does not require:
+
+- serialized model files;
+- private datasets;
+- external APIs;
+- API keys;
+- GPUs;
+- an LLM service.
+
+The deployment uses a dedicated dependency manifest nearest the Community Cloud entry point to reduce install time, dependency conflicts, and attack surface.
+
+## Container Architecture
+
+```mermaid
+flowchart LR
+    Source[requirements-api.txt] --> Builder[Python 3.11 Builder]
+    Builder --> Venv[/opt/venv]
+    Venv --> Runtime[Python 3.11 Slim Runtime]
+    API[api/] --> Runtime
+    Domain[src/] --> Runtime
+    Runtime --> NonRoot[UID 10001]
+    NonRoot --> Uvicorn[Uvicorn :8000]
+    Uvicorn --> Health[/health]
+```
+
+The final image excludes local datasets, model artifacts, notebooks, secrets, test output, and development tooling.
+
+## Continuous-Delivery Architecture
+
+```mermaid
+flowchart TD
+    Change[Push / Pull Request]
+    Change --> Matrix[Python 3.10 and 3.11]
+    Matrix --> Compile[Compile Validation]
+    Compile --> Ruff[Ruff Correctness]
+    Ruff --> Tests[Domain + API + Supervisor Tests]
+    Tests --> Evidence[Coverage XML + JUnit]
+
+    Change --> Streamlit[Streamlit Smoke Test]
+    Streamlit --> StreamlitHealth[/_stcore/health]
+
+    Change --> Container[Docker Build]
+    Container --> APIHealth[/health]
+
+    Evidence --> Readiness[Release Readiness]
+    StreamlitHealth --> Readiness
+    APIHealth --> Readiness
+```
+
+## Security and Supply-Chain Architecture
+
+Controls include:
+
+- CodeQL semantic source analysis;
+- Gitleaks current-tree secret scanning;
+- Bandit Python security reporting;
+- Trivy filesystem reporting;
+- Trivy container reporting;
+- `pip-audit` reports for API and Streamlit manifests;
+- Dependabot updates;
+- CycloneDX SBOM generation;
+- release-image provenance and SBOM generation.
+
+These controls provide automated evidence. They do not establish regulatory compliance or prove that the system is vulnerability-free.
+
+## Operational Principles
+
+1. **Correctness before complexity** — prefer testable, deterministic behavior.
+2. **Transparency before model theater** — never represent an unvalidated heuristic as a clinical model.
+3. **Data minimization** — accept only required numeric fields and reject unknown API fields.
+4. **Reproducibility** — pin deployment dependencies and separate runtime manifests.
+5. **Defense in depth** — validate at both API and domain boundaries.
+6. **Observable behavior** — expose health and metrics contracts.
+7. **Safe deployment** — use non-root containers, health checks, and automated smoke tests.
+8. **Explicit governance** — document responsible use, contribution requirements, release standards, and security reporting.
+
+## Future Architecture
+
+Potential future work may include a separately versioned trained-model adapter, model registry, calibration evidence, subgroup analysis, OpenTelemetry traces, authentication, rate limiting, Kubernetes deployment, and signed model artifacts.
+
+Any future model path should remain separate from the transparent baseline and must document data provenance, licensing, validation, calibration, intended use, excluded use, and limitations.
