@@ -1,113 +1,74 @@
-# ============================================================
-# PYTHON & ML SYSTEM .gitignore (Optimized for RAG/LLM Projects)
-# ============================================================
-
-# -----------------------------
-# PYTHON FILES / BUILD ARTIFACTS
-# -----------------------------
+# Python caches, build output, and test evidence
 __pycache__/
 *.py[cod]
-*.pyo
-*.pyd
 *.so
 *.egg-info/
-dist/
 build/
-pip-wheel-metadata/
-
-# -----------------------------
-# VIRTUAL ENVIRONMENTS
-# -----------------------------
-.env
-.venv
-venv/
-ENV/
-env/
-*.virtualenv
-
-# -----------------------------
-# JUPYTER NOTEBOOKS
-# -----------------------------
-.ipynb_checkpoints/
-*.nbconvert.ipynb
-
-# -----------------------------
-# LOGS
-# -----------------------------
-logs/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
 *.log
 
-# -----------------------------
-# MODEL ARTIFACTS
-# -----------------------------
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Secrets and local configuration
+.env
+.env.*
+*.key
+*.secret
+api_keys.json
+.streamlit/secrets.toml
+
+# Patient-like data, model artifacts, and vector indexes
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+models/
+checkpoints/
+artifacts/
+mlruns/
 *.pkl
+*.pickle
 *.joblib
 *.pt
 *.pth
 *.onnx
 *.h5
 *.model
-src/models/*.pkl
-src/models/*.joblib
-src/models/*.json
-src/models/*.txt
-
-# -----------------------------
-# RAG / VECTOR STORE ARTIFACTS
-# -----------------------------
 faiss_index/
 *.faiss
 *.index
 
-# -----------------------------
-# SECRETS / ENVIRONMENT CONFIG
-# -----------------------------
-.env
-.env.*
-*.key
-*.secret
-api_keys.json
-
-# -----------------------------
-# DATA FILES (RAW & PROCESSED)
-# -----------------------------
-data/raw/*
-data/processed/*
-!data/raw/.gitkeep
-!data/processed/.gitkeep
-
-# -----------------------------
-# CACHE / TEMP FILES
-# -----------------------------
+# Notebooks and temporary files
+.ipynb_checkpoints/
+*.nbconvert.ipynb
+.cache/
 *.cache
 *.tmp
 tmp/
-.cache/
 
-# -----------------------------
-# DOCKER
-# -----------------------------
+# IDE and operating-system files
+.vscode/
+.history/
+.idea/
+*.code-workspace
+.DS_Store
+Thumbs.db
+
+# Container and security-report output
 docker-build/
 docker-cache/
 *.tar
-
-# -----------------------------
-# VS CODE
-# -----------------------------
-.vscode/
-.history/
-*.code-workspace
-
-# -----------------------------
-# TESTS / COVERAGE
-# -----------------------------
-.coverage
-coverage.xml
-pytest_cache/
-htmlcov/
-
-# -----------------------------
-# MISC
-# -----------------------------
-.DS_Store
-Thumbs.db
+bandit-report.json
+pip-audit-*.json
+trivy-*.txt
+*.cdx.json
