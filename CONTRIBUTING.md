@@ -1,171 +1,162 @@
-# 🤝 Contributing Guide — Diabetes Prediction System
+# Contributing to Disease Prediction Capstone
 
-Thank you for your interest in contributing to this project!  
-This guide outlines best practices, workflow standards, and expectations for external or future contributors.
+Thank you for contributing. This repository is an educational engineering portfolio project focused on transparent risk-screening logic, FastAPI, Streamlit, testing, security, and deployment automation.
 
-This repository follows **professional ML engineering standards**, including modular architecture, CI/CD, testing, security, and documentation.
+It is **not a medical device** and must not be used for diagnosis, treatment, triage, or patient-care decisions.
 
----
+## Development setup
 
-# 📌 Code of Conduct
-
-By contributing, you agree to:
-
-- Write clean, readable, well-documented code  
-- Follow Python best practices (PEP8)  
-- Respect other contributors  
-- Test code before submitting  
-- Not commit secrets or sensitive information  
-
-This project follows a zero-tolerance policy toward harassment, discrimination, or harmful behavior.
-
----
-
-# 🧠 Project Overview
-
-This project is a **production-ready ML pipeline and API** integrating:
-
-- FastAPI  
-- XGBoost, LightGBM, Random Forest, Logistic Regression  
-- RAG (FAISS vector search + OpenAI embeddings)  
-- LLM medical explanations  
-- Docker deployment  
-- GitHub Actions CI/CD  
-
-See `README.md` for full system architecture.
-
----
-
-# 🌱 How to Contribute
-
-## 1. Fork the Repository
-
-## 2. Clone Your Fork
 ```bash
-git clone https://github.com/<your-username>/Diabetes_Prediction_Capstone
-cd Diabetes_Prediction_Capstone
-git checkout -b feature/add-shap-explainability
-git checkout -b fix/api-response-schema
-git checkout -b docs/update-readme
-🧪 Testing Requirements
+git clone https://github.com/CoreyLeath-code/Disease_Prediction_Capstone.git
+cd Disease_Prediction_Capstone
+python -m venv .venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+python -m pip install --upgrade pip
+pip install -r requirements-dev.txt
+```
 
-Before submitting a PR, run:
+## Required local validation
 
-Linting
-black .
-flake8 .
+Run the same critical checks enforced by CI:
 
-Tests
-pytest -q
+```bash
+python -m compileall -q api agents src tests streamlit_app.py streamlit_demo/app.py
+ruff check api agents src tests/test_api.py tests/test_risk_engine.py streamlit_app.py streamlit_demo/app.py \
+  --select E9,F63,F7,F82
+pytest tests/test_api.py tests/test_risk_engine.py -v \
+  --cov=api --cov=src --cov-report=term-missing
+docker build -t disease-capstone:local .
+```
 
-Build Docker locally
-docker build -t diabetes-api .
+Validate the public dashboard locally:
 
+```bash
+streamlit run streamlit_demo/app.py
+```
 
-If any of the above fail, fix the issue before submitting.
+## Data-safety requirements
 
-🧬 Code Standards
-Python
+Do not commit, upload, log, or use in screenshots:
 
-Follow PEP8
+- real patient records;
+- names, dates of birth, addresses, phone numbers, or email addresses;
+- medical-record, insurance, or government identifiers;
+- protected health information (PHI);
+- restricted clinical documents;
+- model artifacts trained on sensitive or unlicensed datasets.
 
-Use type hints
+Use synthetic, fictional, or fully non-identifiable data only.
 
-Keep functions small and single-purpose
+## Code standards
 
-Add docstrings to all modules, classes, and functions
+### Python
 
-FastAPI
+- Use type annotations in public and critical paths.
+- Keep functions focused and deterministic when practical.
+- Add docstrings that explain purpose and safety boundaries.
+- Prefer explicit validation over implicit assumptions.
+- Avoid hidden global state and import-time model loading.
+- Use `time.perf_counter()` for elapsed-time measurement.
 
-Use Pydantic models for validation
+### Domain logic
 
-Return standardized JSON responses
+- Do not describe a heuristic score as a diagnosis or calibrated probability.
+- Keep thresholds and weights transparent and test-covered.
+- Preserve the educational-use disclaimer.
+- Document the source and validation status of any future model.
+- Add tests for boundary values, invalid inputs, deterministic behavior, and output provenance.
 
-Add meaningful error messages
+### FastAPI
 
-ML Code
+- Use bounded Pydantic request and response models.
+- Reject unknown fields unless a documented use case requires them.
+- Avoid returning stack traces, local paths, or raw exception details.
+- Keep `/health` lightweight and dependency-free.
+- Update OpenAPI examples when contracts change.
 
-No hard-coded paths
+### Streamlit
 
-No magic numbers
+- Keep the public deployment artifact-independent.
+- Use the lightweight manifest in `streamlit_demo/requirements.txt`.
+- Do not add secrets to source control.
+- Preserve clear non-clinical labels and responsible-use guidance.
+- Test the `/_stcore/health` endpoint in CI after meaningful UI changes.
 
-Log model performance
+### Containers and release engineering
 
-Keep training and inference completely separate
+- Keep the runtime non-root.
+- Do not bake datasets, credentials, or private model artifacts into images.
+- Preserve health checks and minimal runtime dependencies.
+- Document operational and rollback impact for deployment changes.
 
-RAG Code
+## Branch and commit conventions
 
-Test retrieval step independently
+Use focused branches, for example:
 
-Avoid embedding the same document multiple times
+```text
+feat/add-calibration-evidence
+fix/api-range-validation
+test/add-boundary-cases
+docs/update-streamlit-runbook
+```
 
-🔐 Security Guidelines
+Conventional Commit prefixes are recommended:
 
-Do NOT commit:
+```text
+feat:
+fix:
+refactor:
+test:
+docs:
+security:
+ci:
+build:
+deploy:
+release:
+chore:
+```
 
-.env
+## Pull-request standard
 
-API keys
+Every pull request should explain:
 
-model weights
+1. the problem or risk being addressed;
+2. the design and alternatives considered;
+3. user-facing and API behavior changes;
+4. validation evidence;
+5. security, privacy, and data-handling impact;
+6. deployment and rollback impact;
+7. documentation updates.
 
-raw patient-like data
+Before requesting review, confirm:
 
-FAISS indexes
+- [ ] New behavior is tested.
+- [ ] Python 3.10 and 3.11 checks pass.
+- [ ] Streamlit deployment smoke testing passes when applicable.
+- [ ] The API container builds and becomes healthy.
+- [ ] No secrets or identifiable health data are included.
+- [ ] Disclaimers and backend provenance remain accurate.
+- [ ] Documentation and changelog entries are updated.
 
-These are protected by .gitignore.
+## Review criteria
 
-📦 Pull Request Guidelines
-PR Format:
-Title: feat: add LIME explainability module
+Reviewers should evaluate:
 
-Description:
-- Added new explainability module for model interpretation
-- Updated README
-- Added tests for new functionality
+- correctness and deterministic behavior;
+- input boundaries and failure modes;
+- medical-claim and responsible-use language;
+- privacy and data-minimization impact;
+- security and dependency impact;
+- maintainability and testability;
+- observability and operational behavior;
+- deployment compatibility and rollback safety.
 
-Checklist:
-- [x] Linting passed
-- [x] Tests added/passed
-- [x] CI/CD pipeline succeeded
+## Release process
 
-PR Requirements:
+Releases use tags in the form:
 
-✔ Clear description
-✔ Clean diff (no unnecessary formatting)
-✔ Tests included if applicable
-✔ CI/CD must pass
-✔ No secrets committed
+```text
+vMAJOR.MINOR.PATCH
+```
 
-🏁 Commit Convention (Recommended)
-
-Follow the Angular-style convention:
-
-feat: add new model for hyperparameter search
-fix: correct FastAPI endpoint validation
-docs: update metrics documentation
-test: add missing unit tests
-refactor: simplify preprocessing pipeline
-ci: update GitHub Actions workflow
-chore: update dependencies
-
-🧭 Roadmap (Areas Open for Contribution)
-
-Add SHAP visualization support
-
-Add calibration curve API endpoint
-
-Add K-fold cross-validation training option
-
-Expand RAG corpus with more medical papers
-
-Add model registry support (MLflow)
-
-Add monitoring dashboards (Grafana / Prometheus)
-
-Build Streamlit UI for patient-friendly predictions
-
-🎉 Thank You for Contributing!
-
-Your contributions help improve this system and demonstrate high-quality ML engineering practices.
-For questions, open an Issue or contact: https://github.com/Trojan3877
+A release tag triggers GitHub Release artifact generation and GHCR image publishing. Release notes should distinguish application features, safety changes, dependency changes, and operational changes.
