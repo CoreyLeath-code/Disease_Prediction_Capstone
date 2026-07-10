@@ -1,9 +1,6 @@
 # 🩺 Disease Prediction Capstone
 
 ### Explainable Educational Risk Screening · FastAPI · Streamlit · Docker · L6 Nine-Tier Deployment Hygiene
-[![Disease Capstone Enterprise CI](https://github.com/CoreyLeath-code/Disease_Prediction_Capstone/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/CoreyLeath-code/Disease_Prediction_Capstone/actions/workflows/ci.yml)
-[![Security & Supply Chain](https://github.com/CoreyLeath-code/Disease_Prediction_Capstone/actions/workflows/security.yml/badge.svg?branch=main)](https://github.com/CoreyLeath-code/Disease_Prediction_Capstone/actions/workflows/security.yml)
-[![Release Engineering](https://github.com/CoreyLeath-code/Disease_Prediction_Capstone/actions/workflows/release.yml/badge.svg)](https://github.com/CoreyLeath-code/Disease_Prediction_Capstone/actions/workflows/release.yml)
 ![Python](https://img.shields.io/badge/Python-3.10%20%7C%203.11-3776AB?logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-Validated%20API-009688?logo=fastapi&logoColor=white)
 ![Streamlit](https://img.shields.io/badge/Streamlit-Community%20Cloud%20Ready-FF4B4B?logo=streamlit&logoColor=white)
