@@ -1,29 +1,40 @@
+# Version control and automation
+.git/
+.github/
+
+# Python caches and environments
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
-*.swp
-.Python
-env/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.venv/
 venv/
-ENV/
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-*.egg-info/
-.installed.cfg
-*.egg
+env/
+
+# Local configuration and credentials
+.env
+.env.*
+.streamlit/secrets.toml
+*.secret
+
+# Data, models, notebooks, and generated artifacts
+data/
+models/
+checkpoints/
+artifacts/
+mlruns/
+*.pkl
+*.pickle
+*.joblib
+*.onnx
+*.ipynb
+
+# Documentation and local tooling
+.vscode/
+.idea/
+.DS_Store
 *.log
 *.sqlite3
-.DS_Store
-.idea/
-.vscode/
-*.ipynb_checkpoints
