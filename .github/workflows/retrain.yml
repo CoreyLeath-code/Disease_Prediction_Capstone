@@ -1,47 +1,48 @@
-name: Scheduled Retraining
+name: Training Pipeline Readiness
 
-# Run this workflow on a schedule—for example, every Sunday at 2 AM UTC
 on:
-  schedule:
-    - cron: "0 2 * * 0"
+  workflow_dispatch:
+    inputs:
+      acknowledge_non_clinical_use:
+        description: "Type EDUCATIONAL_ONLY to acknowledge this is not a clinical training pipeline"
+        required: true
+        type: string
+
+permissions:
+  contents: read
 
 jobs:
-  retrain:
+  readiness:
+    name: Validate Training Preconditions
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - name: Verify responsible-use acknowledgement
+        env:
+          ACKNOWLEDGEMENT: ${{ inputs.acknowledge_non_clinical_use }}
+        run: |
+          test "${ACKNOWLEDGEMENT}" = "EDUCATIONAL_ONLY"
+
+      - uses: actions/setup-python@v5
         with:
-          python-version: 3.9
+          python-version: "3.11"
 
-      - name: Install dependencies
+      - name: Validate legacy training source syntax
         run: |
-          pip install --upgrade pip
-          pip install -r requirements.txt
+          python -m compileall -q src
 
-      - name: Update raw data
+      - name: Document training boundary
         run: |
-          python update_data.py
+          cat > training-readiness.txt <<'EOF'
+          The repository's public deployment uses a deterministic educational baseline.
+          This workflow does not download patient data, train a model, commit artifacts,
+          or claim clinical validation. A future training workflow must document data
+          provenance, licensing, de-identification, leakage controls, calibration,
+          subgroup evaluation, model versioning, and independent review.
+          EOF
 
-      - name: Train model on new data
-        run: |
-          python src/train.py \
-            --data_path data/raw/diabetes.csv \
-            --output_model models/trained_model.pkl
-
-      - name: Evaluate new model
-        run: |
-          python src/evaluate.py \
-            --model_path models/trained_model.pkl \
-            --data_path data/raw/diabetes.csv
-
-      - name: Commit updated results (optional)
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "github-actions"
-          git add results/ models/
-          git commit -m "Auto-retrained model and updated results [skip ci]" || echo "No changes to commit"
-          git push
+      - uses: actions/upload-artifact@v4
+        with:
+          name: training-readiness-boundary
+          path: training-readiness.txt
