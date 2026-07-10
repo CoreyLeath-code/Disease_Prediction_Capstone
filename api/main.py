@@ -6,6 +6,7 @@ provide diagnoses, treatment recommendations, or clinically validated probabilit
 
 from __future__ import annotations
 
+from dataclasses import asdict
 from typing import Final, Literal
 
 import prometheus_client as prom
@@ -123,7 +124,7 @@ def examples() -> dict[str, dict[str, object]]:
 
     return {
         name: {
-            "profile": profile.__dict__,
+            "profile": asdict(profile),
             "assessment": assess_profile(profile).to_dict(),
         }
         for name, profile in example_profiles().items()
