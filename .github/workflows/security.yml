@@ -53,7 +53,7 @@ jobs:
       - name: Generate Bandit report
         run: |
           bandit -r api agents src -f json -o bandit-report.json || true
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: bandit-security-report
           path: bandit-report.json
@@ -73,7 +73,7 @@ jobs:
           severity: HIGH,CRITICAL
           ignore-unfixed: true
           exit-code: "0"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: trivy-filesystem-report
           path: trivy-filesystem.txt
@@ -93,7 +93,7 @@ jobs:
           severity: HIGH,CRITICAL
           ignore-unfixed: true
           exit-code: "0"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: trivy-container-report
           path: trivy-container.txt
@@ -112,7 +112,7 @@ jobs:
         run: pip-audit -r requirements-api.txt --format json --output pip-audit-api.json || true
       - name: Generate Streamlit dependency report
         run: pip-audit -r streamlit_demo/requirements.txt --format json --output pip-audit-streamlit.json || true
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: dependency-audit-reports
           path: |
@@ -130,7 +130,7 @@ jobs:
           path: .
           format: cyclonedx-json
           output-file: disease-capstone-sbom.cdx.json
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: disease-capstone-sbom
           path: disease-capstone-sbom.cdx.json
