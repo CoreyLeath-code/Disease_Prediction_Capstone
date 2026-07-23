@@ -10,6 +10,8 @@ __pycache__/
 .ruff_cache/
 .coverage
 htmlcov/
+coverage.xml
+pytest-results.xml
 .venv/
 venv/
 env/
@@ -17,19 +19,30 @@ env/
 # Local configuration and credentials
 .env
 .env.*
+!.env.example
 .streamlit/secrets.toml
 *.secret
+*.pem
+*.key
+*.p12
+*.pfx
 
 # Data, models, notebooks, and generated artifacts
 data/
+datasets/
 models/
 checkpoints/
 artifacts/
 mlruns/
+dist/
+build/
+*.csv
+*.parquet
 *.pkl
 *.pickle
 *.joblib
 *.onnx
+*.h5
 *.ipynb
 
 # Documentation and local tooling
@@ -38,3 +51,5 @@ mlruns/
 .DS_Store
 *.log
 *.sqlite3
+tests/
+docs/
