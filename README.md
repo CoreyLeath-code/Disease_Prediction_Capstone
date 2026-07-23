@@ -2,29 +2,15 @@
 
 # 🩺 Disease Prediction Capstone
 
-### Production-grade disease prediction platform with reproducible ML pipelines, FastAPI serving, CI/CD, and containerized deployment.
+### Production-oriented educational risk-screening platform with FastAPI, Streamlit, CI/CD, and containerized deployment.
 
-<br>
-
-[![CI](https://img.shields.io/github/actions/workflow/status/CoreyLeath-code/Disease_Prediction_Capstone/ci.yml?branch=main&label=CI&logo=github)](...)
-[![CodeQL](https://img.shields.io/github/actions/workflow/status/CoreyLeath-code/Disease_Prediction_Capstone/codeql.yml?branch=main&label=CodeQL&logo=github)](...)
-[![Docs](https://img.shields.io/github/actions/workflow/status/CoreyLeath-code/Disease_Prediction_Capstone/docs.yml?branch=main&label=Documentation)](...)
-[![Coverage](https://img.shields.io/badge/Coverage-85%25-success)](...)
-
-<br>
-
-![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12-blue?logo=python)
-![FastAPI](https://img.shields.io/badge/FastAPI-Production-009688?logo=fastapi)
-![LightGBM](https://img.shields.io/badge/LightGBM-Gradient%20Boosting-green)
-![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED?logo=docker)
-![MLflow](https://img.shields.io/badge/MLflow-Experiment%20Tracking-0194E2)
-
-<br>
-
-![Security](https://img.shields.io/badge/Security-Trivy-blue)
-![Artifact](https://img.shields.io/badge/Artifact-SHA--256%20Verified-purple)
-![License](https://img.shields.io/badge/License-MIT-yellow)
-![Release](https://img.shields.io/github/v/release/CoreyLeath-code/Disease_Prediction_Capstone)
+[![CI](https://img.shields.io/github/actions/workflow/status/CoreyLeath-code/Disease_Prediction_Capstone/ci.yml?branch=main&label=CI&logo=github)](https://github.com/CoreyLeath-code/Disease_Prediction_Capstone/actions/workflows/ci.yml)
+[![Security](https://img.shields.io/github/actions/workflow/status/CoreyLeath-code/Disease_Prediction_Capstone/security.yml?branch=main&label=Security&logo=github)](https://github.com/CoreyLeath-code/Disease_Prediction_Capstone/actions/workflows/security.yml)
+[![Python](https://img.shields.io/badge/Python-3.10%20%7C%203.11-blue?logo=python)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?logo=fastapi)](https://fastapi.tiangolo.com/)
+[![Streamlit](https://img.shields.io/badge/Streamlit-Community%20Cloud-FF4B4B?logo=streamlit)](https://streamlit.io/)
+[![Docker](https://img.shields.io/badge/Docker-Non--root%20image-2496ED?logo=docker)](https://www.docker.com/)
+[![License](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
 
 </div>
 
@@ -115,27 +101,27 @@ The demo does **not**:
 
 ```mermaid
 flowchart LR
-    U[User] --> S[Streamlit Dashboard]
-    U --> A[FastAPI Service]
+    U["User / reviewer"] --> S["Streamlit dashboard"]
+    U --> A["FastAPI service"]
 
-    S --> V[Bounded Input Validation]
+    S --> V["Bounded input validation"]
     A --> V
+    V --> E["Deterministic educational engine"]
+    E --> X["Explainability evidence"]
+    X --> R["Score + band + disclaimer"]
 
-    V --> E[Deterministic Educational Risk Engine]
-    E --> X[Explainability Evidence]
-    X --> R[Score, Indicator Band, Disclaimer]
+    A --> M["Prometheus metrics"]
+    A --> H["Health contract"]
 
-    A --> M[Prometheus Metrics]
+    C["Pull request / release"] --> T["Python matrix + tests"]
+    C --> SS["Streamlit smoke test"]
+    C --> CS["Container health test"]
+    C --> Q["Release readiness"]
 
-    C[GitHub Actions] --> T[Python 3.10 & 3.11 Tests]
-    C --> SS[Streamlit Health Smoke Test]
-    C --> CS[Container Health Smoke Test]
-    C --> Q[Release Readiness Contract]
-
-    SEC[Security Workflow] --> CQ[CodeQL]
-    SEC --> GL[Gitleaks]
-    SEC --> TR[Trivy]
-    SEC --> SB[CycloneDX SBOM]
+    SEC["Security workflow"] --> CQ["CodeQL"]
+    SEC --> GL["Gitleaks"]
+    SEC --> TR["Trivy"]
+    SEC --> SB["CycloneDX SBOM"]
 ```
 
 ### Request Flow
@@ -265,56 +251,44 @@ Disease_Prediction_Capstone/
 
 ## Quick Start
 
-### Prerequisites
+### 1. Install
 
-| Tool | Version |
-|---|---:|
-| Python | 3.10 or 3.11 |
-| Git | Current stable |
-| Docker | Current stable |
-
-### Clone and Install
+Prerequisites: Python 3.10 or 3.11, Git, and Docker for container validation.
 
 ```bash
 git clone https://github.com/CoreyLeath-code/Disease_Prediction_Capstone.git
 cd Disease_Prediction_Capstone
-
 python -m venv .venv
-source .venv/bin/activate  # Windows: .venv\Scripts\activate
-
+source .venv/bin/activate  # Windows: .venv\\Scripts\\activate
 python -m pip install --upgrade pip
 pip install -r requirements-dev.txt
 ```
 
-### Run Streamlit
+### 2. Launch the Streamlit dashboard
 
 ```bash
 streamlit run streamlit_demo/app.py
 ```
 
-Open:
+Open [http://localhost:8501](http://localhost:8501). Use fictional or fully non-identifiable values only.
 
-```text
-http://localhost:8501
-```
-
-### Run FastAPI
+### 3. Launch the FastAPI service
 
 ```bash
 uvicorn api.main:app --reload
 ```
 
-Open:
+Useful endpoints:
 
-```text
-API:     http://localhost:8000
-Swagger: http://localhost:8000/docs
-ReDoc:   http://localhost:8000/redoc
-Metrics: http://localhost:8000/metrics
-Health:  http://localhost:8000/health
-```
+| URL | Purpose |
+|---|---|
+| [http://localhost:8000/](http://localhost:8000/) | Service identity and disclaimer |
+| [http://localhost:8000/docs](http://localhost:8000/docs) | OpenAPI / Swagger UI |
+| [http://localhost:8000/health](http://localhost:8000/health) | Liveness check |
+| [http://localhost:8000/metrics](http://localhost:8000/metrics) | Prometheus exposition |
+| [http://localhost:8000/examples](http://localhost:8000/examples) | Fictional examples |
 
-### Example API Request
+### 4. Send a sample request
 
 ```bash
 curl -X POST http://localhost:8000/predict \
@@ -332,31 +306,18 @@ curl -X POST http://localhost:8000/predict \
   }'
 ```
 
-Example response:
+The response contains a deterministic score, an educational indicator band, threshold contributors, backend provenance, and a responsible-use disclaimer. The score is not a calibrated probability.
 
-```json
-{
-  "score": 42.0,
-  "category": "moderate",
-  "contributors": [
-    "glucose is above the demo reference band",
-    "HbA1c is above the demo reference band",
-    "blood pressure is above the demo reference band",
-    "BMI is above the demo reference band",
-    "cholesterol is above the demo reference band",
-    "age modestly contributes to the educational screening score"
-  ],
-  "educational_notes": [
-    "The score is a transparent rule-based demonstration, not a calibrated probability.",
-    "Only synthetic or non-identifiable data should be entered into this public demo."
-  ],
-  "backend": "deterministic-educational-screening-baseline",
-  "disclaimer": "Educational portfolio demonstration only...",
-  "api_version": "2.0.0"
-}
+### 5. Validate locally
+
+```bash
+python -m compileall -q api agents src tests streamlit_app.py streamlit_demo/app.py
+ruff check api agents src tests streamlit_app.py streamlit_demo/app.py --select E9,F63,F7,F82
+pytest tests/test_api.py tests/test_risk_engine.py tests/test_supervisor.py -v
+docker build -t disease-prediction-capstone:local .
 ```
 
-The exact score follows the documented deterministic thresholds in `src/risk_engine.py`.
+For deployment-specific instructions, see [the Streamlit runbook](docs/STREAMLIT_DEPLOYMENT.md), [the production deployment runbook](docs/PRODUCTION_DEPLOYMENT.md), and [the hardened Compose profile](deploy/docker-compose.production.yml).
 
 ---
 
@@ -429,6 +390,49 @@ Test categories include:
 - root, health, metrics, examples, and prediction API contracts;
 - unknown-field rejection;
 - out-of-range API input rejection.
+
+---
+
+## Research-style Metrics and Benchmarks
+
+This repository reports engineering evidence, not clinical performance. No accuracy, sensitivity, specificity, AUROC, calibration, or clinical-effectiveness claim is made because the current public path is a deterministic educational baseline rather than a trained model.
+
+### Evaluation contract
+
+| Dimension | Metric | Current evidence | Interpretation |
+|---|---|---|---|
+| Correctness | Unit/API test pass rate | Reported by CI | Contract and regression evidence |
+| Code quality | Ruff correctness checks | Reported by CI | Syntax and high-confidence lint evidence |
+| Compatibility | Python 3.10 and 3.11 matrix | Reported by CI | Supported-runtime evidence |
+| Service liveness | `/health` smoke test | Reported by CI | Process/container responsiveness |
+| Dashboard availability | Streamlit health smoke test | Reported by CI | Deployment-path responsiveness |
+| Runtime packaging | Container build and health test | Reported by CI | Image startup evidence |
+| Explainability | Contributor and disclaimer contract tests | Reported by tests | Output transparency evidence |
+| Security | CodeQL, Gitleaks, Bandit, Trivy, pip-audit | Reported by security workflow | Automated risk-screening evidence |
+
+### Benchmark protocol
+
+When performance measurements are added, record the following for every run:
+
+1. commit SHA, Python version, operating system, and dependency lock state;
+2. synthetic fixture size and generation seed;
+3. warm-up count and measured request count;
+4. median, p95, and p99 latency;
+5. throughput, error rate, and memory peak;
+6. endpoint, payload shape, concurrency, and hardware;
+7. whether measurements include process startup, network, or serialization.
+
+Example command shape for a repeatable local smoke benchmark:
+
+```bash
+python -m pytest tests/test_api.py tests/test_risk_engine.py -q
+```
+
+Benchmark results must not be presented as clinical validation. A future trained model would require a pre-registered evaluation design, held-out data, calibration analysis, subgroup analysis, uncertainty reporting, leakage controls, and independent review before any clinical interpretation.
+
+### Reproducibility standard
+
+Benchmark artifacts should be stored outside the public demo's runtime image and linked to a release commit. Do not upload real patient data, identifiable records, private datasets, or unreviewed model artifacts.
 
 ---
 
