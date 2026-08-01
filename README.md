@@ -10,6 +10,7 @@
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?logo=fastapi)](https://fastapi.tiangolo.com/)
 [![Streamlit](https://img.shields.io/badge/Streamlit-Community%20Cloud-FF4B4B?logo=streamlit)](https://streamlit.io/)
 [![Docker](https://img.shields.io/badge/Docker-Non--root%20image-2496ED?logo=docker)](https://www.docker.com/)
+[![Pinecone](https://img.shields.io/badge/Pinecone-Optional%20RAG-00A98F?logo=pinecone&logoColor=white)](https://www.pinecone.io/)
 [![License](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
 
 </div>
@@ -253,6 +254,21 @@ Disease_Prediction_Capstone/
 ```
 
 ---
+
+## Optional Pinecone retrieval
+
+The RAG path supports a hosted Pinecone backend while preserving FAISS as the default for offline development and CI. Install the optional dependency set and configure secrets through the deployment environment:
+
+```bash
+python -m pip install -r requirements-pinecone.txt
+export VECTORSTORE_BACKEND=pinecone
+export PINECONE_API_KEY=***
+export PINECONE_INDEX_NAME=disease-capstone
+export PINECONE_NAMESPACE=disease-capstone
+python ingest.py
+```
+
+The configured index must match the embedding dimension and metric. Pinecone results must be benchmarked separately from the local FAISS path with corpus provenance, sample count, top-k, recall@k, p95 latency, error rate, and cost. This project remains an educational demonstration and makes no clinical claim.
 
 ## Quick Start
 
