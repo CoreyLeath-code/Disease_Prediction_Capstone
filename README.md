@@ -20,9 +20,6 @@
 >
 > This repository demonstrates production-oriented machine learning engineering practices. It is **not** intended to diagnose disease or provide medical advice. Any healthcare deployment would require regulatory approval, representative clinical validation, fairness analysis, calibration testing, and human oversight.
 
----
-
-## Executive Summary
 
 Disease Prediction Capstone is a production-oriented software-engineering portfolio project that demonstrates how a health-related machine-learning interface can be designed with transparent behavior, bounded inputs, reproducible deployments, automated testing, security evidence, and explicit responsible-use controls.
 
