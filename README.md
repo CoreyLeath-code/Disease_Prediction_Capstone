@@ -176,6 +176,7 @@ API controls include:
 
 - bounded Pydantic fields;
 - unknown-field rejection;
+- non-finite numeric input rejection (NaN and Infinity);
 - blood-pressure relationship validation;
 - explicit response models;
 - deterministic backend provenance;
@@ -183,6 +184,13 @@ API controls include:
 - request-category counters;
 - error counters;
 - latency histograms.
+
+#### Input-integrity failure contract
+
+POST /predict rejects non-finite numeric values before domain evaluation. This includes
+malformed raw JSON values such as NaN and Infinity, which are returned as a JSON-safe
+HTTP 422 validation response rather than an internal-server error. The regression test
+covers both glucose: NaN and hba1c: Infinity.
 
 ### Supervisor Compatibility Layer
 
