@@ -7,13 +7,16 @@ provide diagnoses, treatment recommendations, or clinically validated probabilit
 from __future__ import annotations
 
 from dataclasses import asdict
-from typing import Final, Literal
+import math
+from typing import Any, Final, Literal
 
 import prometheus_client as prom
-from fastapi import FastAPI
-from fastapi.responses import Response
+from fastapi import FastAPI, Request
+from fastapi.encoders import jsonable_encoder
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse, Response
 from prometheus_client import Counter, Histogram
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from src.risk_engine import DISCLAIMER, PatientProfile, assess_profile, example_profiles
 
@@ -43,6 +46,36 @@ app = FastAPI(
 )
 
 
+def _json_safe_validation_detail(value: Any) -> Any:
+    """Replace non-finite values so validation failures remain JSON serializable."""
+
+    if isinstance(value, float) and not math.isfinite(value):
+        return str(value)
+    if isinstance(value, dict):
+        return {
+            key: _json_safe_validation_detail(item)
+            for key, item in value.items()
+        }
+    if isinstance(value, list):
+        return [_json_safe_validation_detail(item) for item in value]
+    return value
+
+
+@app.exception_handler(RequestValidationError)
+async def request_validation_exception_handler(
+    request: Request,
+    exc: RequestValidationError,
+) -> JSONResponse:
+    """Return a standards-compliant error response for malformed numeric JSON."""
+
+    return JSONResponse(
+        status_code=422,
+        content=jsonable_encoder(
+            {"detail": _json_safe_validation_detail(exc.errors())}
+        ),
+    )
+
+
 class ScreeningRequest(BaseModel):
     """Bounded input contract shared with the Streamlit demonstration."""
 
@@ -57,6 +90,31 @@ class ScreeningRequest(BaseModel):
     skin_thickness: float = Field(ge=0.0, le=100.0)
     cholesterol: float = Field(ge=80.0, le=500.0)
     hba1c: float = Field(ge=3.0, le=20.0)
+
+    @field_validator(
+        "age",
+        "bmi",
+        "systolic_bp",
+        "diastolic_bp",
+        "glucose",
+        "insulin",
+        "skin_thickness",
+        "cholesterol",
+        "hba1c",
+        mode="before",
+    )
+    @classmethod
+    def validate_finite_values(cls, value: object) -> object:
+        """Reject JSON NaN and Infinity before range validation."""
+
+        try:
+            numeric_value = float(value)
+        except (TypeError, ValueError):
+            return value
+
+        if not math.isfinite(numeric_value):
+            raise ValueError("numeric inputs must be finite.")
+        return value
 
     @model_validator(mode="after")
     def validate_blood_pressure_order(self) -> "ScreeningRequest":

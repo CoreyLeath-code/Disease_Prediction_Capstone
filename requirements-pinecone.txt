@@ -1,0 +1,2 @@
+# Optional hosted RAG backend; install with the normal runtime requirements.
+pinecone>=6.0.0

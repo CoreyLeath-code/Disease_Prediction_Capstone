@@ -13,9 +13,14 @@ def rag_query(user_question: str):
     try:
         config = load_config()
 
-        # Load FAISS index
-        index_path = Path(config["paths"]["faiss_index"])
-        index = faiss.read_index(str(index_path))
+        backend = os.getenv("VECTORSTORE_BACKEND", "faiss").strip().lower()
+        if backend not in {"faiss", "pinecone"}:
+            raise RAGError("VECTORSTORE_BACKEND must be 'faiss' or 'pinecone'.")
+
+        index = None
+        if backend == "faiss":
+            index_path = Path(config["paths"]["faiss_index"])
+            index = faiss.read_index(str(index_path))
 
         # Load chunks
         docs_dir = Path(config["rag"]["rag_docs_dir"])
@@ -30,9 +35,13 @@ def rag_query(user_question: str):
 
         # Retrieve top-k
         k = config["rag"]["top_k"]
-        distances, indices = index.search(q_vec, k)
+        if backend == "pinecone":
+            from rag.pinecone_store import query_chunks
 
-        retrieved_texts = [chunks[i] for i in indices[0]]
+            retrieved_texts = query_chunks(q_vec[0], k)
+        else:
+            distances, indices = index.search(q_vec, k)
+            retrieved_texts = [chunks[i] for i in indices[0]]
 
         # LLM Explanation
         client = OpenAI()

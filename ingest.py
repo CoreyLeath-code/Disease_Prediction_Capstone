@@ -49,6 +49,16 @@ def ingest_documents():
         # Embed chunks
         vectors = embedder.embed(all_chunks).astype("float32")
 
+        backend = os.getenv("VECTORSTORE_BACKEND", "faiss").strip().lower()
+        if backend == "pinecone":
+            from rag.pinecone_store import upsert_chunks
+
+            upsert_chunks(all_chunks, vectors)
+            logger.info("Pinecone index updated")
+            return all_chunks, None
+        if backend != "faiss":
+            raise RAGError("VECTORSTORE_BACKEND must be 'faiss' or 'pinecone'.")
+
         # Build FAISS index
         dim = vectors.shape[1]
         index = faiss.IndexFlatL2(dim)
