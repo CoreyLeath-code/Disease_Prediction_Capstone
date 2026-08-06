@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import json
+
+import pytest
 from fastapi.testclient import TestClient
 
 from api.main import app
@@ -78,6 +81,27 @@ def test_predict_rejects_out_of_range_input() -> None:
     response = client.post("/predict", json=payload)
 
     assert response.status_code == 422
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("glucose", float("nan")),
+        ("hba1c", float("inf")),
+    ],
+)
+def test_predict_rejects_non_finite_numeric_input(
+    field: str,
+    value: float,
+) -> None:
+    response = client.post(
+        "/predict",
+        content=json.dumps({**VALID_PAYLOAD, field: value}, allow_nan=True),
+        headers={"content-type": "application/json"},
+    )
+
+    assert response.status_code == 422
+    assert "numeric inputs must be finite" in response.text
 
 
 def test_predict_rejects_unknown_fields() -> None:
