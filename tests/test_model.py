@@ -1,43 +1,53 @@
-# tests/test_model.py
+"""Regression tests for the verified public screening baseline.
 
-import pytest
-import numpy as np
-from unittest.mock import patch, MagicMock
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.datasets import make_classification
-from sklearn.metrics import accuracy_score
+This repository does not currently ship a trained disease-prediction model. The legacy
+version of this file created an unrelated scikit-learn RandomForest during test collection,
+which made a full `pytest` run depend on packages that are not part of the supported runtime
+and implied model-quality evidence that the public application does not provide.
 
+These tests instead exercise the actual deterministic, explainable baseline used by the
+public API and Streamlit surfaces.
+"""
 
-@pytest.fixture
-def trained_model_and_data():
-    """Create a minimal trained model and test data for use in tests."""
-    X, y = make_classification(n_samples=200, n_features=7, random_state=42)
-    split = int(len(X) * 0.8)
-    X_train, X_test = X[:split], X[split:]
-    y_train, y_test = y[:split], y[split:]
+from __future__ import annotations
 
-    model = RandomForestClassifier(n_estimators=10, random_state=42)
-    model.fit(X_train, y_train)
-
-    return model, X_test, y_test
+from src.risk_engine import DISCLAIMER, assess_profile, example_profiles
 
 
-def test_model_accuracy(trained_model_and_data):
-    model, X_test, y_test = trained_model_and_data
-    predictions = model.predict(X_test)
-    accuracy = accuracy_score(y_test, predictions)
-    assert accuracy >= 0.0, f"Model accuracy unexpectedly negative: {accuracy:.2f}"
-    print(f"✅ Accuracy test passed with {accuracy:.2f}")
+def test_public_baseline_is_deterministic() -> None:
+    profile = example_profiles()["Moderate indicator example"]
+
+    first = assess_profile(profile)
+    second = assess_profile(profile)
+
+    assert first == second
 
 
-def test_model_shape(trained_model_and_data):
-    model, X_test, y_test = trained_model_and_data
-    predictions = model.predict(X_test)
-    assert len(predictions) == len(y_test), "Mismatch in prediction count"
+def test_public_baseline_exposes_nonclinical_provenance() -> None:
+    assessment = assess_profile(example_profiles()["Elevated indicator example"])
+
+    assert assessment.backend == "deterministic-educational-screening-baseline"
+    assert assessment.disclaimer == DISCLAIMER
+    assert "not a diagnosis" in assessment.disclaimer.lower()
 
 
-def test_model_edge_case(trained_model_and_data):
-    model, X_test, y_test = trained_model_and_data
-    edge_case = X_test[0:1]
-    result = model.predict(edge_case)
-    assert result.shape == (1,), "Edge case prediction failed"
+def test_example_profiles_cover_expected_indicator_ordering() -> None:
+    examples = example_profiles()
+
+    low = assess_profile(examples["Lower indicator example"])
+    moderate = assess_profile(examples["Moderate indicator example"])
+    elevated = assess_profile(examples["Elevated indicator example"])
+
+    assert low.category == "low"
+    assert moderate.category == "moderate"
+    assert elevated.category == "elevated"
+    assert low.score < moderate.score < elevated.score
+
+
+def test_public_score_is_bounded_and_explainable() -> None:
+    for profile in example_profiles().values():
+        assessment = assess_profile(profile)
+
+        assert 0.0 <= assessment.score <= 100.0
+        assert assessment.contributors
+        assert assessment.educational_notes
