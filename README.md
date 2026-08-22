@@ -2,334 +2,154 @@
 
 # 🩺 Disease Prediction Capstone
 
-### Production-oriented educational risk-screening platform with FastAPI, Streamlit, CI/CD, and containerized deployment.
+### Evidence-first educational health-risk screening platform with FastAPI, Streamlit, CI/CD, security automation, and containerized deployment.
 
 [![CI](https://img.shields.io/github/actions/workflow/status/CoreyLeath-code/Disease_Prediction_Capstone/ci.yml?branch=main&label=CI&logo=github)](https://github.com/CoreyLeath-code/Disease_Prediction_Capstone/actions/workflows/ci.yml)
 [![Security](https://img.shields.io/github/actions/workflow/status/CoreyLeath-code/Disease_Prediction_Capstone/security.yml?branch=main&label=Security&logo=github)](https://github.com/CoreyLeath-code/Disease_Prediction_Capstone/actions/workflows/security.yml)
-[![Python](https://img.shields.io/badge/Python-3.10%20%7C%203.11-blue?logo=python)](https://www.python.org/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?logo=fastapi)](https://fastapi.tiangolo.com/)
-[![Streamlit](https://img.shields.io/badge/Streamlit-Community%20Cloud-FF4B4B?logo=streamlit)](https://streamlit.io/)
-[![Docker](https://img.shields.io/badge/Docker-Non--root%20image-2496ED?logo=docker)](https://www.docker.com/)
-[![Pinecone](https://img.shields.io/badge/Pinecone-Optional%20RAG-00A98F?logo=pinecone&logoColor=white)](https://www.pinecone.io/)
-[![License](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
+[![Release](https://img.shields.io/github/v/release/CoreyLeath-code/Disease_Prediction_Capstone?label=Release&logo=github)](https://github.com/CoreyLeath-code/Disease_Prediction_Capstone/releases)
+[![Python](https://img.shields.io/badge/Python-3.10%20%7C%203.11-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/API-FastAPI-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![Streamlit](https://img.shields.io/badge/UI-Streamlit-FF4B4B?logo=streamlit&logoColor=white)](https://streamlit.io/)
+[![Docker](https://img.shields.io/badge/Container-non--root-2496ED?logo=docker&logoColor=white)](Dockerfile)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 </div>
 
----
+> **Educational demonstration only.** This repository does not diagnose disease, provide medical advice, estimate a clinically calibrated probability, or claim clinical validation. Any healthcare use would require representative clinical data, pre-registered evaluation, calibration and subgroup analysis, regulatory review where applicable, and human oversight.
 
-> **⚠️ Educational Demonstration**
->
-> This repository demonstrates production-oriented machine learning engineering practices. It is **not** intended to diagnose disease or provide medical advice. Any healthcare deployment would require regulatory approval, representative clinical validation, fairness analysis, calibration testing, and human oversight.
+## Executive summary
 
+Disease Prediction Capstone is a software-engineering and ML-systems portfolio project centered on a transparent educational risk-screening baseline. The verified public path uses deterministic rules over bounded inputs rather than presenting an unvalidated statistical model as a clinical predictor. The repository demonstrates API design, validation, explainable outputs, Streamlit delivery, non-root containerization, testing, release automation, and security workflows while keeping medical claims deliberately bounded.
 
-Disease Prediction Capstone is a production-oriented software-engineering portfolio project that demonstrates how a health-related machine-learning interface can be designed with transparent behavior, bounded inputs, reproducible deployments, automated testing, security evidence, and explicit responsible-use controls.
+The current core engine is deterministic: `src/risk_engine.py` validates nine features, computes a visible rule-based score, returns a low/moderate/elevated indicator band, records the contributing thresholds, and always includes a non-clinical disclaimer. The score is not a disease probability and the heuristic weights are not learned from patient outcomes.
 
-The current deployable path intentionally uses a **deterministic educational risk-screening baseline** rather than presenting an unvalidated model as a clinical predictor. Every result identifies its backend, exposes the threshold contributors, includes a non-clinical disclaimer, and avoids describing the score as a calibrated disease probability.
+## What is verified
 
-The repository includes:
+- bounded `PatientProfile` validation with finite-value checks and blood-pressure consistency
+- deterministic `assess_profile()` scoring and explainable contributor output
+- fictional low/moderate/elevated example profiles
+- FastAPI request/response contracts, liveness and metrics surfaces
+- Streamlit demonstration path
+- Python CI, tests, lint/compile checks, container smoke validation, and security automation
+- non-root Python 3.11 runtime container
+- semantic-tag release workflow and GHCR container publishing path
 
-- an artifact-independent Streamlit Community Cloud dashboard;
-- a validated FastAPI service;
-- a shared deterministic domain engine;
-- immutable supervisor-state contracts;
-- explainability evidence and fictional example profiles;
-- Prometheus metrics;
-- multi-version CI;
-- Streamlit and container health smoke tests;
-- CodeQL, Gitleaks, Bandit, Trivy, `pip-audit`, Dependabot, and CycloneDX SBOM automation;
-- semantic release automation and GHCR container publishing;
-- complete L6 nine-tier deployment-hygiene documentation.
+## What is not claimed
 
-## Live Demo Deployment
-
-After the upgrade is merged, deploy through Streamlit Community Cloud with:
-
-```text
-Repository:
-CoreyLeath-code/Disease_Prediction_Capstone
-
-Branch:
-main
-
-Main file path:
-streamlit_demo/app.py
-```
-
-No API key, model checkpoint, private dataset, GPU, or external service is required for the built-in demonstration.
-
-The dedicated Streamlit directory keeps the public deployment lightweight:
-
-```text
-streamlit_demo/
-├── app.py
-└── requirements.txt
-```
-
-See [`docs/STREAMLIT_DEPLOYMENT.md`](docs/STREAMLIT_DEPLOYMENT.md) for the complete deployment and troubleshooting runbook.
+- clinical diagnosis or treatment recommendation
+- AUROC, sensitivity, specificity, precision/recall, or calibrated disease probability for the public baseline
+- external or prospective clinical validation
+- fairness across demographic or clinical subgroups
+- production SLOs, internet-scale load, or regulated deployment readiness
+- safety of processing identifiable patient data in the public demo
 
 ---
 
-## What the Public Demo Does
-
-The Streamlit application provides:
-
-- bounded inputs for age, BMI, blood pressure, glucose, insulin, skin thickness, cholesterol, and HbA1c;
-- three fictional example profiles;
-- deterministic low, moderate, and elevated educational indicator bands;
-- transparent score contributors;
-- responsible-use and data-quality notes;
-- a submitted-feature snapshot;
-- downloadable JSON output;
-- architecture visualization;
-- nine-tier deployment-hygiene evidence;
-- extended engineering Q&A.
-
-The demo does **not**:
-
-- diagnose disease;
-- estimate a clinically calibrated probability;
-- recommend medication or treatment;
-- store or process real patient records by design;
-- call an external LLM;
-- claim regulatory approval or clinical validation.
-
----
-
-## Architecture
+## Architecture flowchart
 
 ```mermaid
 flowchart LR
-    U["User / reviewer"] --> S["Streamlit dashboard"]
-    U --> A["FastAPI service"]
-
-    S --> V["Bounded input validation"]
-    A --> V
-    V --> E["Deterministic educational engine"]
-    E --> X["Explainability evidence"]
-    X --> R["Score + band + disclaimer"]
-
-    A --> M["Prometheus metrics"]
-    A --> H["Health contract"]
-
-    C["Pull request / release"] --> T["Python matrix + tests"]
-    C --> SS["Streamlit smoke test"]
-    C --> CS["Container health test"]
-    C --> Q["Release readiness"]
-
-    SEC["Security workflow"] --> CQ["CodeQL"]
-    SEC --> GL["Gitleaks"]
-    SEC --> TR["Trivy"]
-    SEC --> SB["CycloneDX SBOM"]
+    U["Reviewer / user"] --> UI["Streamlit demo"]
+    U --> API["FastAPI service"]
+    UI --> V["Bounded input validation"]
+    API --> V
+    V --> P["PatientProfile contract"]
+    P --> E["Deterministic educational risk engine"]
+    E --> X["Contributor evidence + data-quality notes"]
+    X --> R["Score + indicator band + disclaimer"]
+    API --> H["/health"]
+    API --> M["/metrics"]
+    PR["Pull request / tag"] --> CI["CI + tests + container checks"]
+    PR --> SEC["Security automation"]
+    PR --> REL["Release + GHCR workflow"]
 ```
 
-### Request Flow
+## System design flow
 
 ```mermaid
 sequenceDiagram
     participant Client
     participant API as FastAPI
-    participant Schema as Pydantic
+    participant Schema as Pydantic / domain validation
     participant Engine as Risk Engine
     participant Metrics as Prometheus
-
     Client->>API: POST /predict
-    API->>Schema: Validate bounded request
-    Schema-->>API: PatientProfile
+    API->>Schema: validate bounded fields
+    Schema-->>API: validated profile
     API->>Engine: assess_profile(profile)
-    Engine-->>API: Explainable assessment
-    API->>Metrics: Record category and latency
-    API-->>Client: Score, band, contributors, disclaimer
+    Engine-->>API: deterministic assessment
+    API->>Metrics: record request category + latency
+    API-->>Client: score, band, contributors, disclaimer
 ```
 
----
+### Deployment boundary
 
-## Core Engineering Improvements
-
-### Transparent Domain Engine
-
-`src/risk_engine.py` provides:
-
-- immutable patient-profile inputs;
-- finite-value validation;
-- documented feature ranges;
-- blood-pressure ordering validation;
-- deterministic scoring;
-- explicit contributor evidence;
-- reproducible fictional examples;
-- JSON-serializable results;
-- a mandatory responsible-use disclaimer.
-
-The weights are intentionally simple and visible. They are not a trained or clinically calibrated model.
-
-### Hardened FastAPI Service
-
-`api/main.py` provides:
-
-| Endpoint | Purpose |
-|---|---|
-| `GET /` | Service identity and responsible-use metadata |
-| `GET /health` | Lightweight liveness contract |
-| `GET /metrics` | Prometheus metrics |
-| `GET /examples` | Reproducible fictional profiles and results |
-| `POST /predict` | Validated educational screening result |
-
-API controls include:
-
-- bounded Pydantic fields;
-- unknown-field rejection;
-- non-finite numeric input rejection (NaN and Infinity);
-- blood-pressure relationship validation;
-- explicit response models;
-- deterministic backend provenance;
-- non-clinical disclaimer;
-- request-category counters;
-- error counters;
-- latency histograms.
-
-#### Input-integrity failure contract
-
-POST /predict rejects non-finite numeric values before domain evaluation. This includes
-malformed raw JSON values such as NaN and Infinity, which are returned as a JSON-safe
-HTTP 422 validation response rather than an internal-server error. The regression test
-covers both glucose: NaN and hba1c: Infinity.
-
-### Supervisor Compatibility Layer
-
-The original capstone introduced a supervisor and circuit-breaker concept. The hardened implementation preserves that public interface while correcting several issues:
-
-- uses monotonic `time.perf_counter()` timing;
-- validates circuit-breaker configuration;
-- uses immutable Pydantic state snapshots;
-- bounds biomarker and vital-sign values;
-- rejects unknown biomarker fields;
-- replaces unsupported external-LLM claims with a deterministic safety reviewer;
-- replaces diagnostic language with educational indicator classifications;
-- increases the default demonstration latency budget to a more realistic software-smoke-test value.
+The production-shaped container is intentionally narrow. The Dockerfile copies only `api/` and `src/`, installs API dependencies into a virtual environment, runs as UID `10001`, exposes port `8000`, defines an HTTP health check, and starts `uvicorn api.main:app`. This verifies container packaging and process health; it does not establish clinical or large-scale operational readiness.
 
 ---
-
-## Project Structure
-
-```text
-Disease_Prediction_Capstone/
-├── .github/
-│   ├── workflows/
-│   │   ├── ci.yml
-│   │   ├── security.yml
-│   │   └── release.yml
-│   ├── CODEOWNERS
-│   ├── dependabot.yml
-│   └── pull_request_template.md
-├── .streamlit/
-│   └── config.toml
-├── agents/
-│   ├── guards.py
-│   ├── state.py
-│   └── supervisor.py
-├── api/
-│   └── main.py
-├── app/
-│   └── main.py                 # Legacy API compatibility wrapper
-├── docs/
-│   ├── L6_DEPLOYMENT_HYGIENE.md
-│   └── STREAMLIT_DEPLOYMENT.md
-├── src/
-│   └── risk_engine.py
-├── streamlit_demo/
-│   ├── app.py                  # Community Cloud entry point
-│   └── requirements.txt
-├── tests/
-│   ├── test_api.py
-│   └── test_risk_engine.py
-├── streamlit_app.py            # Dashboard implementation
-├── demo_app.py                 # Legacy Streamlit compatibility wrapper
-├── requirements-api.txt
-├── requirements-dev.txt
-├── requirements.txt
-├── Dockerfile
-├── SECURITY.md
-├── CONTRIBUTING.md
-├── CHANGELOG.md
-└── LICENSE
-```
-
----
-
-## Optional Pinecone retrieval
-
-The RAG path supports a hosted Pinecone backend while preserving FAISS as the default for offline development and CI. Install the optional dependency set and configure secrets through the deployment environment:
-
-```bash
-python -m pip install -r requirements-pinecone.txt
-export VECTORSTORE_BACKEND=pinecone
-export PINECONE_API_KEY=***
-export PINECONE_INDEX_NAME=disease-capstone
-export PINECONE_NAMESPACE=disease-capstone
-python ingest.py
-```
-
-The configured index must match the embedding dimension and metric. Pinecone results must be benchmarked separately from the local FAISS path with corpus provenance, sample count, top-k, recall@k, p95 latency, error rate, and cost. This project remains an educational demonstration and makes no clinical claim.
 
 ## Quick Start
 
-### 1. Install
+### 1. Clone and install
 
-Prerequisites: Python 3.10 or 3.11, Git, and Docker for container validation.
+Prerequisites: Python 3.10 or 3.11, Git, and Docker if you want to validate the container path.
 
 ```bash
 git clone https://github.com/CoreyLeath-code/Disease_Prediction_Capstone.git
 cd Disease_Prediction_Capstone
 python -m venv .venv
-source .venv/bin/activate  # Windows: .venv\\Scripts\\activate
+```
+
+Linux/macOS:
+
+```bash
+source .venv/bin/activate
+```
+
+Windows PowerShell:
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+```
+
+Install dependencies:
+
+```bash
 python -m pip install --upgrade pip
 pip install -r requirements-dev.txt
 ```
 
-### 2. Launch the Streamlit dashboard
+### 2. Run the API
+
+```bash
+uvicorn api.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+| Route | Purpose |
+|---|---|
+| `GET /` | service identity and responsible-use metadata |
+| `GET /health` | liveness contract |
+| `GET /metrics` | Prometheus exposition |
+| `GET /examples` | reproducible fictional examples |
+| `POST /predict` | validated educational screening result |
+
+Example request:
+
+```bash
+curl -X POST http://localhost:8000/predict \
+  -H "Content-Type: application/json" \
+  -d '{"age":52,"bmi":28.4,"systolic_bp":134,"diastolic_bp":84,"glucose":112,"insulin":118,"skin_thickness":30,"cholesterol":216,"hba1c":5.9}'
+```
+
+### 3. Run the Streamlit demo
 
 ```bash
 streamlit run streamlit_demo/app.py
 ```
 
-Open [http://localhost:8501](http://localhost:8501). Use fictional or fully non-identifiable values only.
+Use fictional or fully non-identifiable values only.
 
-### 3. Launch the FastAPI service
-
-```bash
-uvicorn api.main:app --reload
-```
-
-Useful endpoints:
-
-| URL | Purpose |
-|---|---|
-| [http://localhost:8000/](http://localhost:8000/) | Service identity and disclaimer |
-| [http://localhost:8000/docs](http://localhost:8000/docs) | OpenAPI / Swagger UI |
-| [http://localhost:8000/health](http://localhost:8000/health) | Liveness check |
-| [http://localhost:8000/metrics](http://localhost:8000/metrics) | Prometheus exposition |
-| [http://localhost:8000/examples](http://localhost:8000/examples) | Fictional examples |
-
-### 4. Send a sample request
-
-```bash
-curl -X POST http://localhost:8000/predict \
-  -H "Content-Type: application/json" \
-  -d '{
-    "age": 52,
-    "bmi": 28.4,
-    "systolic_bp": 134,
-    "diastolic_bp": 84,
-    "glucose": 112,
-    "insulin": 118,
-    "skin_thickness": 30,
-    "cholesterol": 216,
-    "hba1c": 5.9
-  }'
-```
-
-The response contains a deterministic score, an educational indicator band, threshold contributors, backend provenance, and a responsible-use disclaimer. The score is not a calibrated probability.
-
-### 5. Validate locally
+### 4. Validate locally
 
 ```bash
 python -m compileall -q api agents src tests streamlit_app.py streamlit_demo/app.py
@@ -338,351 +158,191 @@ pytest tests/test_api.py tests/test_risk_engine.py tests/test_supervisor.py -v
 docker build -t disease-prediction-capstone:local .
 ```
 
-For deployment-specific instructions, see [the Streamlit runbook](docs/STREAMLIT_DEPLOYMENT.md), [the production deployment runbook](docs/PRODUCTION_DEPLOYMENT.md), and [the hardened Compose profile](deploy/docker-compose.production.yml).
-
 ---
 
-## Docker Deployment
+## Evidence and reproducibility
 
-Build:
+A result is treated as portfolio evidence only when the exact code path, command, environment, and artifact are identifiable. CI status by itself is not treated as proof of model quality.
 
-```bash
-docker build -t disease-prediction-capstone .
-```
-
-Run:
-
-```bash
-docker run --rm -p 8000:8000 disease-prediction-capstone
-```
-
-Verify:
-
-```bash
-curl http://localhost:8000/health
-```
-
-The API image uses:
-
-- a separate dependency-builder stage;
-- a minimal Python 3.11 runtime;
-- a non-root user with UID `10001`;
-- an explicit Uvicorn entry point;
-- an HTTP health check;
-- no bundled datasets, notebooks, credentials, or serialized model artifacts.
-
----
-
-## Testing and Quality
-
-Run syntax validation:
-
-```bash
-python -m compileall -q api agents src tests streamlit_app.py streamlit_demo/app.py
-```
-
-Run high-confidence Ruff checks:
-
-```bash
-ruff check api agents src tests/test_api.py tests/test_risk_engine.py \
-  streamlit_app.py streamlit_demo/app.py \
-  --select E9,F63,F7,F82
-```
-
-Run tests with coverage:
-
-```bash
-pytest tests/test_api.py tests/test_risk_engine.py -v \
-  --cov=api \
-  --cov=src \
-  --cov-report=term-missing \
-  --cov-report=html
-```
-
-Test categories include:
-
-- low, moderate, and elevated fictional examples;
-- deterministic output;
-- serialization;
-- empty-threshold explanation;
-- zero-value data-quality notes;
-- invalid age, BMI, glucose, cholesterol, and HbA1c values;
-- reversed blood-pressure values;
-- root, health, metrics, examples, and prediction API contracts;
-- unknown-field rejection;
-- out-of-range API input rejection.
-
----
-
-## Research-style Metrics and Benchmarks
-
-This repository reports engineering evidence, not clinical performance. No accuracy, sensitivity, specificity, AUROC, calibration, or clinical-effectiveness claim is made because the current public path is a deterministic educational baseline rather than a trained model.
-
-### Evaluation contract
-
-| Dimension | Metric | Current evidence | Interpretation |
+| Evidence class | Current repository evidence | What it proves | What it does not prove |
 |---|---|---|---|
-| Correctness | Unit/API test pass rate | Reported by CI | Contract and regression evidence |
-| Code quality | Ruff correctness checks | Reported by CI | Syntax and high-confidence lint evidence |
-| Compatibility | Python 3.10 and 3.11 matrix | Reported by CI | Supported-runtime evidence |
-| Service liveness | `/health` smoke test | Reported by CI | Process/container responsiveness |
-| Dashboard availability | Streamlit health smoke test | Reported by CI | Deployment-path responsiveness |
-| Runtime packaging | Container build and health test | Reported by CI | Image startup evidence |
-| Explainability | Contributor and disclaimer contract tests | Reported by tests | Output transparency evidence |
-| Security | CodeQL, Gitleaks, Bandit, Trivy, pip-audit | Reported by security workflow | Automated risk-screening evidence |
+| Domain correctness | deterministic risk-engine tests | bounded input and deterministic contract behavior | medical validity |
+| API correctness | request/response and failure-mode tests | interface behavior | clinical usefulness |
+| Explainability | contributor/disclaimer contract | transparent heuristic reasoning | causal explanation |
+| Containerization | non-root Docker image + health check | package/startup viability | production capacity |
+| Security | CodeQL / dependency / secret / container-oriented automation | automated risk screening | absence of all vulnerabilities |
+| Release | semantic-tag release and GHCR workflow | repeatable artifact publication path | runtime SLOs |
 
-### Benchmark protocol
+### Reproducibility checklist
 
-When performance measurements are added, record the following for every run:
+For every future benchmark or model-quality claim, record:
 
-1. commit SHA, Python version, operating system, and dependency lock state;
-2. synthetic fixture size and generation seed;
-3. warm-up count and measured request count;
-4. median, p95, and p99 latency;
-5. throughput, error rate, and memory peak;
-6. endpoint, payload shape, concurrency, and hardware;
-7. whether measurements include process startup, network, or serialization.
+1. commit SHA and release tag;
+2. exact command and configuration;
+3. Python and dependency versions;
+4. operating system and hardware;
+5. dataset/source version and checksum;
+6. train/validation/test split procedure;
+7. random seed or seed set;
+8. warm-up and sample counts for runtime benchmarks;
+9. machine-readable output artifact;
+10. known limitations and invalid comparisons.
 
-Example command shape for a repeatable local smoke benchmark:
-
-```bash
-python -m pytest tests/test_api.py tests/test_risk_engine.py -q
-```
-
-Benchmark results must not be presented as clinical validation. A future trained model would require a pre-registered evaluation design, held-out data, calibration analysis, subgroup analysis, uncertainty reporting, leakage controls, and independent review before any clinical interpretation.
-
-### Reproducibility standard
-
-Benchmark artifacts should be stored outside the public demo's runtime image and linked to a release commit. Do not upload real patient data, identifiable records, private datasets, or unreviewed model artifacts.
+A future learned model should also pin preprocessing logic and serialized model artifacts so inference is tied to the exact training/evaluation pipeline.
 
 ---
 
-## L6 Nine-Tier Deployment Hygiene
+## Research-style benchmarks and metrics
 
-The complete evidence model is documented in [`docs/L6_DEPLOYMENT_HYGIENE.md`](docs/L6_DEPLOYMENT_HYGIENE.md).
+### Current evidence boundary
 
-| Tier | Engineering Domain | Implemented Evidence |
-|---:|---|---|
-| 1 | Source Hygiene | Typed contracts, bounded inputs, pinned manifests, Ruff, syntax validation |
-| 2 | Test Engineering | Python 3.10/3.11 matrix, domain/API tests, coverage XML, JUnit |
-| 3 | Static Quality | CodeQL, compile checks, immutable contracts, explicit schemas |
-| 4 | Security Engineering | Gitleaks, Bandit, Trivy, non-root runtime, data-minimization rules |
-| 5 | Supply-Chain Hygiene | Dependabot, `pip-audit`, CycloneDX SBOM, release SBOM/provenance |
-| 6 | Reproducible Runtime | Multi-stage image, lightweight Streamlit runtime, Python pin, health checks |
-| 7 | Continuous Delivery | Streamlit smoke test, container smoke test, release-readiness contract |
-| 8 | Release Engineering | Semantic tags, GitHub Releases, GHCR publishing |
-| 9 | Operational Governance | SECURITY, CONTRIBUTING, CHANGELOG, CODEOWNERS, PR template, runbooks |
+The public runtime is a deterministic educational baseline, so the README deliberately does **not** publish clinical accuracy, sensitivity, specificity, AUROC, calibration error, or disease-risk probability. Those metrics would be misleading without a defined dataset, target label, leakage controls, split policy, subgroup analysis, and confidence intervals.
 
----
+### Engineering benchmark protocol
 
-## CI/CD Pipeline
-
-```mermaid
-flowchart LR
-    C[Commit / Pull Request] --> P[Python 3.10 & 3.11]
-    P --> L[Compile + Ruff]
-    L --> T[Domain + API Tests]
-    T --> E[Coverage + JUnit Evidence]
-
-    C --> S[Streamlit Smoke Test]
-    S --> SH[Streamlit Health Endpoint]
-
-    C --> D[Docker Build]
-    D --> H[Live API Health Test]
-
-    E --> R[Release Readiness]
-    SH --> R
-    H --> R
-```
-
-The release-readiness job uses `if: always()` so it executes and reports upstream states rather than appearing silently skipped after a prerequisite failure.
-
----
-
-## Security and Supply Chain
-
-Automated security evidence includes:
-
-| Control | Purpose |
+| Dimension | Required record |
 |---|---|
-| CodeQL | Static source analysis |
-| Gitleaks | Current-tree secret scanning |
-| Bandit | Python security report |
-| Trivy filesystem | Source and dependency vulnerability report |
-| Trivy container | Runtime-image vulnerability report |
-| `pip-audit` | API and Streamlit dependency reports |
-| Dependabot | Automated dependency update pull requests |
-| CycloneDX | Software Bill of Materials |
-| Docker provenance | Release-image build provenance |
-| Container SBOM | Release-image dependency inventory |
+| Source | commit SHA and release tag |
+| Environment | OS, CPU/GPU, RAM, Python, container/runtime |
+| Workload | endpoint, payload shape, concurrency, fixture seed |
+| Procedure | warm-up count, measured count, timeout policy |
+| Latency | median, p95, p99 |
+| Capacity | requests/second and error rate |
+| Resources | peak memory and CPU utilization |
+| Scope | whether startup/network/serialization are included |
 
-A green security workflow is evidence that automated checks executed successfully. It is not proof that the application is vulnerability-free, HIPAA compliant, FDA approved, or clinically safe.
+No benchmark number should be promoted to this README until its machine-readable artifact and environment metadata are committed or attached to a release.
 
-See [`SECURITY.md`](SECURITY.md) for the responsible-disclosure and data-safety policy.
+### Required protocol for a future trained classifier
+
+Before claiming predictive improvement, evaluate against a frozen, representative dataset using patient-level leakage controls and a pre-declared split. Report at minimum:
+
+- sample count and prevalence;
+- train/validation/test sizes;
+- missing-data policy and preprocessing fit boundary;
+- AUROC and AUPRC with confidence intervals;
+- sensitivity/specificity at declared operating points;
+- calibration curve, Brier score, and expected calibration error;
+- subgroup results with uncertainty;
+- threshold-selection procedure;
+- repeated seeds or cross-validation where appropriate;
+- comparison against transparent baselines;
+- documented failure modes and out-of-distribution limitations.
+
+For this repository, any such future results remain **research metrics**, not evidence of clinical effectiveness.
 
 ---
 
-## Release Engineering
+## L6 engineering audit summary
 
-Create a semantic release tag:
+### Strongest aspects
 
-```bash
-git tag v2.0.0
-git push origin v2.0.0
-```
+The repository has a disciplined safety boundary for a health-related portfolio project. The core implementation explicitly calls itself an educational screening baseline, validates finite/ranged inputs, keeps heuristic weights inspectable, and returns a mandatory disclaimer. Tests exercise deterministic behavior, serialization, low/moderate/elevated examples, zero-value data-quality notes, invalid ranges, and inconsistent blood pressure.
 
-The release workflow creates:
+The delivery layer is also stronger than a typical capstone: FastAPI and Streamlit are separated from the domain engine, the API container runs as a non-root user, and GitHub Actions already includes CI, security, dependency-review, retraining, and release workflows.
 
-- generated GitHub Release notes;
-- a source archive excluding data, model artifacts, and secrets;
-- a versioned GHCR API image;
-- OCI metadata labels;
-- container provenance;
-- a container SBOM.
+### Highest-priority gaps
 
-Container image:
+**1. The repository name implies disease prediction more strongly than the verified implementation.** The public path is not a trained disease predictor; it is a deterministic educational risk indicator. README language must preserve that distinction everywhere.
+
+**2. No clinical-model evidence exists for the current public path.** Publishing accuracy/AUROC-style claims without a frozen dataset and evaluation contract would be inappropriate.
+
+**3. Benchmark evidence is process-oriented rather than measured performance evidence.** The repository needs a dedicated JSON-producing latency/load harness before numeric runtime claims are added.
+
+**4. Release packaging is stronger than release verification.** A tag can publish source/container artifacts, but a future hardening pass should attach checksums, immutable image digests, release evidence, and verify that release workflows build the exact tagged commit.
+
+**5. Model-development and demo-runtime stories should remain separated.** The deterministic demo is appropriate for public deployment; any retraining path should not silently replace it without versioned artifacts and explicit evaluation gates.
+
+See [`L6_AUDIT.md`](L6_AUDIT.md) for the full promotion checklist.
+
+---
+
+## Extended Q&A
+
+**Is this application a medical diagnostic tool?**  
+No. It is an educational software-engineering demonstration and is not intended for diagnosis, treatment, or medical decision-making.
+
+**Is the score a probability that a person has a disease?**  
+No. The score is a deterministic heuristic produced by visible rules. It is not calibrated against outcomes and must not be interpreted as a probability.
+
+**Why use a deterministic baseline instead of shipping an old model artifact?**  
+Because a transparent, reproducible baseline is more defensible than exposing an unvalidated model while implying medical performance that the repository cannot substantiate.
+
+**What makes the implementation reproducible?**  
+The public engine has no stochastic model inference, its examples are fictional and fixed, the validation/scoring code is checked in, tests assert deterministic output, and the container path uses an explicit Python runtime and dependency set.
+
+**What evidence would be required before adding a learned model?**  
+A versioned dataset or data manifest, leakage-safe split protocol, pinned preprocessing pipeline, reproducible training configuration, model artifact hash, held-out evaluation, calibration analysis, subgroup analysis, multiple seeds or equivalent uncertainty analysis, and a model card.
+
+**Does a passing CI badge mean the model is medically safe?**  
+No. CI validates software contracts and automation. It does not establish clinical validity, fairness, calibration, safety, or regulatory compliance.
+
+**What does the Docker image prove?**  
+It proves that the API can be packaged and started in a non-root container with an explicit health check. It does not prove capacity, resilience, SLO compliance, or healthcare deployment readiness.
+
+**Why retain the `Disease_Prediction_Capstone` name?**  
+It preserves the original capstone identity. The README and runtime descriptions deliberately narrow the current verified capability to educational risk screening.
+
+---
+
+## Engineering roadmap
+
+### Phase 1 — Evidence baseline
+
+- keep the deterministic public demo as the default verified runtime
+- consolidate claims around code-backed behavior
+- produce machine-readable runtime benchmark artifacts
+- record commit SHA, environment, warm-up, sample count, and percentiles
+- tighten release evidence with archive checksum and image digest capture
+
+### Phase 2 — Research-grade learned baseline
+
+- introduce a clearly versioned training dataset or data manifest
+- implement leakage-safe preprocessing and split boundaries
+- compare logistic regression / tree-based / neural baselines under one frozen evaluation protocol
+- report uncertainty and calibration rather than a single accuracy number
+- add a model card and data-provenance documentation
+
+### Phase 3 — Reliability and observability
+
+- add structured request/error logging without sensitive payload capture
+- add repeatable API load tests and regression thresholds
+- capture p50/p95/p99, throughput, error rate, memory, and CPU utilization
+- validate restart/readiness behavior and rollback procedures
+
+### Phase 4 — Supply-chain hardening
+
+- emit source SHA-256 checksums and CycloneDX/SPDX release artifacts
+- scan final container images in release workflows
+- pin critical GitHub Actions to immutable commits where practical
+- sign or attest release images and document verification
+
+### Phase 5 — Higher-assurance health ML research
+
+- evaluate representative external datasets only under documented governance
+- run subgroup/fairness and calibration analyses
+- add drift and data-quality monitoring contracts
+- perform independent review of intended use and failure modes
+- keep clinical deployment explicitly out of scope until appropriate validation and governance exist
+
+---
+
+## Release and package path
+
+Tags matching `v*.*.*` publish GitHub Release artifacts and build/push the GHCR container image under:
 
 ```text
 ghcr.io/coreyleath-code/disease-prediction-capstone
 ```
 
----
+Release/package presence is evidence of artifact publication, not model-quality evidence.
 
-## Responsible Use and Limitations
+## Responsible use
 
-### Intended use
+Use only fictional, synthetic, or fully non-identifiable inputs in the public demo. Do not enter private patient data, protected health information, or information that could be used for real medical decisions.
 
-- software-engineering portfolio review;
-- FastAPI and Streamlit demonstrations;
-- input-validation examples;
-- deterministic explainability examples;
-- CI/CD, security, supply-chain, and release-engineering demonstrations;
-- synthetic or fully non-identifiable data experiments.
+## Author
 
-### Excluded use
+Corey Leath
 
-- diagnosis;
-- treatment or medication selection;
-- clinical triage;
-- emergency decision-making;
-- insurance, employment, or eligibility decisions;
-- use with identifiable patient information;
-- representation as a calibrated or clinically validated model.
-
-### Technical limitations
-
-- The score is rule-based and not trained from a representative clinical dataset.
-- The thresholds are educational examples and are not a substitute for clinical guidelines.
-- The score is not calibrated as a probability.
-- The application does not evaluate fairness, subgroup performance, calibration, or real-world clinical outcomes.
-- The public demo is intentionally artifact-independent for reproducibility and accessibility.
-
----
-
-## Extended Engineering Q&A
-
-### Why use a deterministic baseline instead of loading a serialized model in the public demo?
-
-A deterministic baseline keeps the application reproducible, fast, explainable, and deployable without private datasets or model artifacts. It also prevents the repository from presenting an unknown or unvalidated serialized model as clinically meaningful.
-
-### Why preserve the repository name if the deployable path is a risk-screening demo?
-
-The repository name reflects the original capstone. The documentation and application now make the actual behavior explicit: the current public path is an educational risk-screening and software-engineering demonstration, not a diagnostic system.
-
-### Why reject unknown API fields?
-
-Rejecting unknown fields catches client mistakes and reduces accidental collection of unrelated personal information. It supports data minimization but does not replace a complete privacy and security program.
-
-### Why are the score contributors returned to the user?
-
-Transparent contributors make the deterministic behavior auditable. A reviewer can connect each output to visible thresholds instead of treating the system as a black box.
-
-### Why is the score not called a probability?
-
-The engine has not been trained and calibrated against representative outcome data. Calling the score a probability would overstate its meaning.
-
-### Why use Pydantic at the API boundary and domain validation inside the engine?
-
-API validation protects the network contract, while domain validation protects every caller—including Streamlit, tests, scripts, and future services. Defense in depth prevents invalid values from bypassing validation through a non-API path.
-
-### Why separate API and Streamlit dependency manifests?
-
-The API and dashboard have different runtime needs. Separate manifests reduce deployment time, image size, attack surface, dependency conflicts, and Streamlit Community Cloud build failures.
-
-### Why use a multi-stage Docker image?
-
-The builder stage installs dependencies into an isolated virtual environment. The runtime stage receives only the environment and application code, reducing build tooling and unnecessary files in the final image.
-
-### Why run the container as a non-root user?
-
-Non-root execution reduces the impact of a container compromise and follows common container-hardening practice.
-
-### Why expose a health endpoint?
-
-Container platforms, load balancers, and CI smoke tests need a lightweight way to determine whether the process is responding. The endpoint avoids model or external-service dependencies so liveness checks remain stable.
-
-### Why expose Prometheus metrics?
-
-Metrics make request volume, result categories, errors, and latency observable. Production deployment would additionally require dashboards, alert thresholds, retention policy, and privacy review.
-
-### Why use both CodeQL and Bandit?
-
-They provide complementary static-analysis evidence. CodeQL performs semantic code analysis, while Bandit focuses on common Python security patterns.
-
-### Why generate both filesystem and container Trivy reports?
-
-The repository and final runtime image have different risk surfaces. Scanning both improves visibility into source dependencies and operating-system packages.
-
-### Why generate an SBOM?
-
-A Software Bill of Materials records included components and supports vulnerability triage, release auditing, and supply-chain transparency.
-
-### Why are some audit findings reported rather than automatically blocking every merge?
-
-Automated vulnerability databases can contain context-dependent or non-exploitable findings. The workflow preserves evidence for review, while critical policy decisions should be based on exploitability, reachability, severity, and remediation availability.
-
-### What would be required before introducing a trained model?
-
-At minimum: documented data provenance and licensing, representative train/validation/test design, leakage controls, calibration, subgroup analysis, uncertainty analysis, versioned artifacts, reproducible training, intended-use documentation, limitations, monitoring, privacy review, and independent clinical and regulatory evaluation.
-
-### What would be required before real clinical use?
-
-Clinical governance, independent validation, quality management, security and privacy controls, human-factors evaluation, regulatory review, post-deployment monitoring, incident response, licensed professional oversight, and evidence appropriate to the jurisdiction and intended use.
-
----
-
-## Roadmap
-
-Potential future engineering work:
-
-- calibrated model interface with a documented model card;
-- reproducible training pipeline on licensed, non-sensitive data;
-- subgroup and fairness evaluation;
-- calibration and uncertainty dashboards;
-- model registry and signed artifact verification;
-- OpenTelemetry traces;
-- rate limiting and authentication reference deployment;
-- Kubernetes and Helm deployment examples;
-- performance regression testing;
-- accessibility testing for the Streamlit interface.
-
-Roadmap items are proposals, not claims of current implementation.
-
----
-
-## Contributing
-
-See [`CONTRIBUTING.md`](CONTRIBUTING.md) for development setup, validation commands, data-safety requirements, code standards, pull-request expectations, and release guidance.
-
-## Security
-
-See [`SECURITY.md`](SECURITY.md) for responsible disclosure, data-handling restrictions, secret management, container security, supply-chain controls, and clinical-claim boundaries.
-
-## License
-
-Licensed under the [MIT License](LICENSE).
-
----
-
-**Author:** Corey Leath  
-**Repository:** `CoreyLeath-code/Disease_Prediction_Capstone`
+Software / AI engineering portfolio project focused on transparent ML systems, reproducibility, MLOps, API engineering, and evidence-backed documentation.
