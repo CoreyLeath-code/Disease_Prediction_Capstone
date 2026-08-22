@@ -52,6 +52,7 @@ jobs:
             src/__init__.py \
             src/risk_engine.py \
             tests/test_api.py \
+            tests/test_model.py \
             tests/test_risk_engine.py \
             tests/test_supervisor.py \
             streamlit_app.py \
@@ -59,11 +60,11 @@ jobs:
             demo_app.py \
             --select E9,F63,F7,F82
 
-      - name: Run domain API and supervisor tests with coverage
+      - name: Run complete test suite with coverage
         env:
           PYTHONPATH: .
         run: |
-          pytest tests/test_api.py tests/test_risk_engine.py tests/test_supervisor.py -v \
+          pytest tests -v \
             --cov=api \
             --cov=src.risk_engine \
             --cov=agents \
