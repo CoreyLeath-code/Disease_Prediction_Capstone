@@ -2,6 +2,12 @@
 
 # 🩺 Disease Prediction Capstone
 
+<!-- portfolio-lifecycle-badges:start -->
+[![Latest release](https://img.shields.io/github/v/release/CoreyLeath-code/Disease_Prediction_Capstone?display_name=tag&sort=semver)](https://github.com/CoreyLeath-code/Disease_Prediction_Capstone/releases/latest)
+[![Lifecycle documentation](https://img.shields.io/badge/lifecycle-documented-2563eb)](#ownership-promotion-and-operational-lifecycle)
+[![Maintainer](https://img.shields.io/badge/maintainer-Corey%20Leath-111827)](https://github.com/CoreyLeath-code)
+<!-- portfolio-lifecycle-badges:end -->
+
 ### Evidence-first educational health-risk screening platform with FastAPI, Streamlit, CI/CD, security automation, and containerized deployment.
 
 [![CI](https://img.shields.io/github/actions/workflow/status/CoreyLeath-code/Disease_Prediction_Capstone/ci.yml?branch=main&label=CI&logo=github)](https://github.com/CoreyLeath-code/Disease_Prediction_Capstone/actions/workflows/ci.yml)
