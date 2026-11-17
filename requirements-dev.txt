@@ -1,5 +1,6 @@
 -r requirements-api.txt
--r streamlit_demo/requirements.txt
+# Streamlit's independent Python 3.11+ smoke-test job installs its own dependencies.
+# Keep Python 3.10 API/quality tests compatible without the Streamlit runtime.
 pytest==9.2.0
 pytest-cov==7.1.0
 httpx==0.28.1
